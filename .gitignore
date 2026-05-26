@@ -1,0 +1,11 @@
+# Obsidian workspace cache (changes frequently, no value in version control)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
