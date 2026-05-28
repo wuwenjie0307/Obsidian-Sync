@@ -28,6 +28,21 @@ tags: [changelog]
 2. API 调用成功，输出 3.44s 嘴型对齐视频
 3. 效果确认 OK
 
+### 端到端串联测试（2026-05-28 17:10）
+
+完整链路测试通过：VoxCPM → LatentSync
+
+| 阶段 | 耗时 | 输出 |
+|------|------|------|
+| VoxCPM 声音克隆 | 1.8s | 338 KB WAV |
+| LatentSync 唇形同步 | 65.7s | 826 KB MP4 |
+| **总耗时** | **67.5s** | — |
+
+- 输出格式：h264 + aac 16000Hz mono
+- 测试文本："今天天气真好，适合出去走走"
+- 测试脚本：`tools/test_e2e_video.py`
+- 并发保护已启用（VoxCPM Semaphore(2), LatentSync Semaphore(1)）
+
 ### 参数链路修复
 
 - CRM voice_emotion/speed/volume → submit 路由 → video_work → clone 函数 → VoxCPM API
