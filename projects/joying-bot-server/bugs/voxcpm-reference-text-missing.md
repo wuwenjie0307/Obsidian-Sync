@@ -2,6 +2,7 @@
 date: 2026-05-28
 status: fixed
 severity: medium
+fixed_date: 2026-05-28
 tags: [bug, voxcpm, tts]
 ---
 
