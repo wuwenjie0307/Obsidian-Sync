@@ -49,7 +49,25 @@ SILICONFLOW_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
 [Environment]::SetEnvironmentVariable("SILICONFLOW_API_KEY", "你的密钥", "User")
 ```
 
-设置后需重启终端生效。
+设置后需重启终端生效。（脚本已内置 Windows 用户环境变量自动检测，即使未重启也能读取到密钥。）
+
+## 常见问题
+
+### GBK 编码报错
+
+Windows 终端默认使用 GBK 编码，Python 输出 emoji 等 Unicode 字符时会报 `UnicodeEncodeError`。解决：
+
+```bash
+export PYTHONIOENCODING=utf-8 && python <skill-dir>/vision.py <图片路径> [提示词]
+```
+
+### API Key 未生效
+
+脚本会自动从以下两个来源加载密钥：
+1. 当前进程环境变量 `SILICONFLOW_API_KEY`
+2. Windows 用户级环境变量（无需重启终端）
+
+如果都读取不到，会返回明确错误提示。
 
 ## Supported Formats
 

@@ -12,6 +12,7 @@
 import base64
 import json
 import os
+import subprocess
 import sys
 
 import requests
@@ -39,10 +40,29 @@ def get_mime_type(file_path: str) -> str:
     return mime_map.get(ext, "image/png")
 
 
-def call_vision_api(image_path: str, prompt: str = None) -> dict:
+def _load_api_key() -> str:
+    """加载 API Key，优先读当前进程环境变量，其次读 Windows 用户环境变量"""
     api_key = os.environ.get("SILICONFLOW_API_KEY", "")
+    if api_key:
+        return api_key
+    # Windows 下尝试从注册表读取用户环境变量（解决终端未重启问题）
+    if sys.platform == "win32":
+        try:
+            result = subprocess.run(
+                ["powershell", "-Command",
+                 "[Environment]::GetEnvironmentVariable('SILICONFLOW_API_KEY', 'User')"],
+                capture_output=True, text=True, timeout=5,
+            )
+            api_key = result.stdout.strip()
+        except Exception:
+            pass
+    return api_key
+
+
+def call_vision_api(image_path: str, prompt: str = None) -> dict:
+    api_key = _load_api_key()
     if not api_key:
-        return {"error": "未设置 SILICONFLOW_API_KEY 环境变量"}
+        return {"error": "未设置 SILICONFLOW_API_KEY 环境变量，请通过 PowerShell 设置：`[Environment]::SetEnvironmentVariable('SILICONFLOW_API_KEY', '你的密钥', 'User')` 后重启终端"}
 
     model = os.environ.get("SILICONFLOW_MODEL", DEFAULT_MODEL)
     prompt = prompt or DEFAULT_PROMPT
@@ -97,6 +117,10 @@ def call_vision_api(image_path: str, prompt: str = None) -> dict:
 
 
 def main():
+    # 修复 Windows GBK 编码无法输出 emoji 的问题
+    if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     if len(sys.argv) < 2:
         print("用法: python vision.py <图片路径> [提示词]", file=sys.stderr)
         print("", file=sys.stderr)
