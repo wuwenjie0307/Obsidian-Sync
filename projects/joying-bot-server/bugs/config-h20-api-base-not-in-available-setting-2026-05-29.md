@@ -127,3 +127,37 @@ app_config/config.py -> available_setting
 | LatentSync | 8101 | ok |
 
 注意：日志会打印完整配置，其中包含敏感字段。后续应考虑避免在 INFO/DEBUG 日志中输出完整配置，或对密码、token、key 做脱敏。
+
+## ai_botserver 服务说明
+
+h20 上 supervisor 管理的 `ai_botserver` 是测试 Bot API 服务，不是 VoxCPM/LatentSync 模型服务。
+
+当前确认：
+
+```text
+supervisor program: ai_botserver
+cwd: /data/project/test_ai_botserver.20260529160246
+symlink: /data/project/test_ai_botserver -> /data/project/test_ai_botserver.20260529160246
+command: app_server_api.py --env=dev --jobStatus=false --port=8017
+health: http://127.0.0.1:8017/status/check -> ok
+log: /data/server_logs/supervisord/ai_botserver.out
+```
+
+同机还存在手动启动的 h20 CRM Bot：
+
+```text
+cwd: /data/projects/joyingbot-new
+command: app_server_api.py --env dev --jobStatus false --port 8100
+health: http://127.0.0.1:8100/status/check -> ok
+```
+
+当前端口关系：
+
+| 服务 | 端口 | 说明 |
+|---|---:|---|
+| supervisor `ai_botserver` | 8017 | 自动部署的测试 Bot API 服务 |
+| 手动 h20 CRM Bot | 8100 | 当前 `223.112.222.90:48100` 对应的外部联调入口 |
+| VoxCPM API | 8110 | Bot 本机调用 |
+| LatentSync API | 8101 | Bot 本机调用 |
+
+注意：当前 h20 同时存在两个 `app_server_api.py` Bot 进程，联调时要明确使用哪个入口。
