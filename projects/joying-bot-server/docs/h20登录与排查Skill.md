@@ -85,11 +85,16 @@ hgx19
 | 服务 | 端口 | 说明 |
 |---|---:|---|
 | supervisor `ai_botserver` | 8017 | 自动部署的测试 Bot API 服务 |
-| 手动 h20 CRM Bot | 8100 | `223.112.222.90:48100` 对应的外部联调入口 |
+| h20 CRM Bot 公网入口 | 8100 | `223.112.222.90:48100` 对应的外部联调入口；2026-05-29 已切到 `/data/project/test_ai_botserver` 当前 Jenkins 部署代码，手动 nohup 运行 |
 | VoxCPM API | 8110 | Bot 本机调用 |
 | LatentSync API | 8101 | Bot 本机调用 |
 
-注意：h20 当前可能同时存在两个 `app_server_api.py` 进程。CRM 外部联调口径以 `48100 -> 8100` 为准，不要和 supervisor 的 `8017` 混淆。
+注意：h20 当前可能同时存在两个 `app_server_api.py` 进程：
+
+- `8017`：supervisor 管理的 `ai_botserver`，工作目录为 `/data/project/test_ai_botserver`。
+- `8100`：公网入口 `48100` 对应的 Bot，2026-05-29 已从旧 `/data/projects/joyingbot-new` 切到 `/data/project/test_ai_botserver` 当前部署代码，但仍是手动 nohup 进程，不归 supervisor 管理。
+
+CRM 外部联调口径以 `48100 -> 8100` 为准；排查时必须确认 8100 进程的 cwd 是 `/data/project/test_ai_botserver.*`，否则可能又跑回旧手动代码。
 
 ## 只读检查命令
 
@@ -115,6 +120,12 @@ curl -s --max-time 5 http://127.0.0.1:8101/health
 
 ```bash
 tail -120 /data/server_logs/supervisord/ai_botserver.out
+```
+
+查看 8100 公网入口 Bot 日志：
+
+```bash
+tail -120 /tmp/bot_8100_test_ai_botserver.log
 ```
 
 按错误关键字筛日志：
@@ -240,10 +251,61 @@ cp config/config-dev.json config/config-dev.json.bak.$(date +%Y%m%d%H%M%S)
 ### `8017` 与 `8100` 混淆
 
 - `8017`：supervisor 自动部署的 `ai_botserver`
-- `8100`：手动 h20 CRM Bot，当前外部 `48100` 指向它
+- `8100`：外部 `48100` 指向它；当前应从 `/data/project/test_ai_botserver` Jenkins 部署目录启动
 
 CRM 联调优先使用：
 
 ```text
 http://223.112.222.90:48100
 ```
+
+2026-05-29 修正记录：
+
+- 发现 `48100 -> 8100` 仍打到旧目录 `/data/projects/joyingbot-new`，导致外部入口没有新调度代码。
+- 已停止旧 8100，并从 `/data/project/test_ai_botserver` 重新启动 8100。
+- 当前验证：外部 `GET /status/check` 返回 200；`POST /crm/submit_heygem_whisper_video_task` 返回 410。
+
+### `/crm/voice_clone_audition` 500
+
+如果 botserver 的 `/crm/voice_clone_audition` 返回 500，优先查看：
+
+```text
+/data/server_logs/supervisord/ai_botserver.out
+```
+
+筛选命令：
+
+```bash
+grep -nE "voice_clone_audition|Traceback|Exception|ERROR|Error" /data/server_logs/supervisord/ai_botserver.out | tail -120
+```
+
+注意不要把日志里的完整配置、密码、token、key 复制到回复或 Obsidian。
+
+## h20 Docker 状态（2026-05-29）
+
+h20 上 Docker CLI 不在默认 PATH，实际路径：
+
+```bash
+/cm/local/apps/docker/current/bin/docker
+```
+
+Docker daemon 使用的数据目录：
+
+```text
+/data/docker
+```
+
+2026-05-29 只读检查结果：
+
+- `docker ps`：没有运行中的容器。
+- `docker ps -a`：只有两个历史退出容器。
+- 当前 Bot / VoxCPM / LatentSync 链路不是通过 Docker 容器运行。
+
+历史退出容器：
+
+| 容器名 | 镜像 | 状态 |
+|---|---|---|
+| `comfyui` | `registry.hd-04.alayanew.com:8443/.../comtext/comfyui-0.3.75:1.53` | Exited 4 months ago |
+| `vllm_server` | `vllm/vllm-openai:v0.10.0` | Exited 4 months ago |
+
+截图里的镜像当前没有运行中容器使用。若要清理镜像，需先确认没有历史回滚或离线启动需求；不要未经确认执行 `docker rm` / `docker rmi` / `docker system prune`。
