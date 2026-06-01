@@ -44,3 +44,13 @@ tags: [changelog, h20, video-generation, crm]
 - 2026-06-01 已将本次 h20 视频生成链路修复提交并推送到 GitLab `test` 分支。
 - 提交：`25536f9b fix: align h20 video generation with production baseline`
 - 本次未推送 `master`。
+
+## LatentSync 产品试测参数
+
+- 2026-06-01 已确认 h20 当前 LatentSync 1.6 底层不支持 `lips_expression` 参数，只支持 `inference_steps` 和 `guidance_scale`。
+- 为配合产品试测“嘴型强度”效果，h20 测试服 LatentSync API 默认值已调整为：
+  - `inference_steps=30`
+  - `guidance_scale=2.0`
+- h20 当前运行目录 `/data/projects/joyingbot-new` 和 Jenkins 部署目录 `/data/project/test_ai_botserver` 的 `router/service/video_server/latentsync_api.py` 均已同步。
+- LatentSync API `8101/health` 已验证返回 `{"status":"ok"}`。
+- GitLab `test` 分支已同步提交：`a49c0afe fix: tune latentsync trial defaults`。
