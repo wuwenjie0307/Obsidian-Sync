@@ -1,4 +1,4 @@
-﻿---
+---
 date: "2026-06-02"
 tags: [changelog, h20, docker, queue, readiness-check, crm]
 ---
