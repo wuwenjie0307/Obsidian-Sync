@@ -1,9 +1,15 @@
 ﻿---
 tags: [skill, h20, ssh, deployment, logs]
-updated: 2026-05-29
+updated: 2026-06-02
 ---
 
 # h20 登录与排查 Skill
+
+## Codex 记忆锚点
+
+- 后续只要问题涉及 h20 / hgx19 / `223.112.222.90:48100` / `48101` / h20 Docker / h20 内部模型服务，先读本文件。
+- 当前 Codex 本机 `C:/Users/admin/.codex/skills` 未发现已安装的独立 `h20-login`/`h20 登录` Skill；这份 Obsidian 笔记是当前可用的 h20 登录 runbook。
+- 不保存、不复述密码；远程只读检查优先使用本次临时环境变量 `H20_JUMP_PASSWORD`。
 
 ## 触发条件
 
