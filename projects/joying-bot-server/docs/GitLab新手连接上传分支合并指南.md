@@ -753,7 +753,338 @@ git status --short
 git diff --cached
 ```
 
-## 19. 最常用命令速查
+## 19. 内网 GitLab 网页操作版
+
+上面的流程主要是终端 Git 命令。网页操作也可以达到同等结果：在 GitLab 远端生成 commit、创建分支、创建 MR、合并到目标分支。
+
+网页操作适合：
+
+- 新手不熟悉命令行。
+- 只改少量文件。
+- 只上传一两个文件。
+- 想直接在 GitLab 页面创建 MR。
+
+网页操作不太适合：
+
+- 一次改很多文件。
+- 需要跑本地测试。
+- 需要处理复杂冲突。
+- 需要上传大目录或大量二进制文件。
+
+这种情况仍推荐用终端 Git 或 IDE。
+
+### 19.1 先连到内网 GitLab
+
+每家公司 GitLab 地址不同，常见形式：
+
+```text
+https://gitlab.example.com
+https://git.company.local
+http://git.company-internal.example
+```
+
+如果 GitLab 是内网服务，先确认自己在内网环境里：
+
+1. 在公司网络内，或先连接公司 VPN。
+2. 打开浏览器访问 GitLab 地址。
+3. 能看到登录页说明网络通了。
+4. 登录自己的 GitLab 账号。
+
+如果打不开：
+
+| 现象 | 可能原因 |
+|---|---|
+| 页面无法访问 | 没连 VPN / 不在内网 |
+| DNS 解析失败 | 内网 DNS 没生效 |
+| 证书报错 | 公司内网证书未信任 |
+| 403 / 无权限 | 账号没项目权限 |
+| 登录后看不到项目 | 没加入项目或 group |
+
+网页操作前至少需要：
+
+- 能打开 GitLab 项目页面。
+- 对项目有 Developer 或更高权限，才能 push 分支。
+- 对目标分支有 merge 权限，才能合并 MR。
+- 如果目标分支受保护，普通成员通常不能直接改目标分支，只能提 MR。
+
+### 19.2 在 GitLab 网页上找到项目
+
+登录后可以从这些地方进入项目：
+
+```text
+Projects -> Your projects
+Groups -> 选择 group -> 选择 project
+搜索框输入项目名
+直接打开项目 URL
+```
+
+项目页面通常会看到：
+
+```text
+Repository
+Branches
+Commits
+Merge requests
+Pipelines
+Settings
+```
+
+如果看不到 `Repository` 或文件列表，说明权限不足。
+
+### 19.3 网页上创建新分支
+
+等同于终端：
+
+```bash
+git fetch origin --prune
+git switch target-branch
+git pull --ff-only origin target-branch
+git switch -c feature/your-change-name
+```
+
+网页操作：
+
+1. 进入项目页面。
+2. 点击 `Repository` -> `Branches`。
+3. 点击 `New branch`。
+4. 填写新分支名，例如：
+   ```text
+   feature/login-page
+   fix/video-quality
+   docs/gitlab-guide
+   ```
+5. `Create from` 选择目标分支，例如：
+   ```text
+   test
+   main
+   master
+   develop
+   ```
+6. 点击创建。
+
+关键点：
+
+- `Create from` 必须选对。你要最终合到哪个分支，就从哪个分支创建。
+- 不要从一个很旧的分支创建，否则后面容易冲突。
+- 不要直接在 `main`、`master`、`test` 上改，除非团队允许。
+
+### 19.4 网页上编辑单个文件
+
+等同于终端：
+
+```bash
+git switch feature/your-change-name
+修改文件
+git add path/to/file
+git commit -m "fix: update file"
+git push
+```
+
+网页操作：
+
+1. 进入项目页面。
+2. 点击 `Repository` -> `Files`。
+3. 左上角分支下拉框选择你的工作分支。
+4. 找到要改的文件。
+5. 点击文件进入详情页。
+6. 点击 `Edit`。
+7. 修改内容。
+8. 页面底部填写 commit message，例如：
+   ```text
+   fix: update video quality settings
+   ```
+9. 确认提交到你的工作分支，而不是目标分支。
+10. 点击 `Commit changes`。
+
+提交后 GitLab 会在远端分支上生成一个 commit。这个结果等同于你在本地 commit 后 push 到 GitLab。
+
+### 19.5 网页上上传新文件
+
+等同于终端：
+
+```bash
+git add new_file.md
+git commit -m "docs: add guide"
+git push
+```
+
+网页操作：
+
+1. 进入项目页面。
+2. 点击 `Repository` -> `Files`。
+3. 分支下拉框选择你的工作分支。
+4. 进入要放文件的目录。
+5. 点击 `+` 或 `New file` / `Upload file`。
+6. 上传文件或新建文件。
+7. 填写 commit message。
+8. 确认提交到工作分支。
+9. 点击 `Commit changes`。
+
+注意：
+
+- 网页上传适合少量文件。
+- 大量文件、整个目录、复杂工程改动，推荐用终端或 IDE。
+- 上传前确认没有 `.env`、私钥、token、日志等敏感文件。
+
+### 19.6 使用 GitLab Web IDE 改多个文件
+
+Web IDE 适合一次改多个文本文件。
+
+操作：
+
+1. 进入项目页面。
+2. 点击 `Web IDE` 或 `Open in Web IDE`。
+3. 确认当前分支是你的工作分支。
+4. 修改多个文件。
+5. 左侧查看 changed files。
+6. 填写 commit message。
+7. 提交到当前工作分支。
+
+如果 GitLab 提示要创建新分支，按提示创建一个工作分支，不要直接提交到受保护目标分支。
+
+Web IDE 的结果也是远端生成 commit，等同于本地 commit + push。
+
+### 19.7 网页上创建 Merge Request
+
+等同于终端里已经 `git push -u origin feature/your-change-name` 后，在 GitLab 上发起合并请求。
+
+操作：
+
+1. 进入项目页面。
+2. 点击 `Merge requests`。
+3. 点击 `New merge request`。
+4. 选择：
+   ```text
+   Source branch: 你的工作分支
+   Target branch: 要合入的目标分支
+   ```
+5. 点击 `Compare branches and continue`。
+6. 填写标题，例如：
+   ```text
+   fix: preserve video quality
+   ```
+7. 填写描述：
+   ```text
+   ## 本次改动
+   1. ...
+   2. ...
+
+   ## 验证
+   1. ...
+   2. ...
+
+   ## 风险
+   1. ...
+   ```
+8. 选择 reviewer / assignee。
+9. 点击 `Create merge request`。
+
+创建 MR 后，GitLab 通常会显示：
+
+- 改了哪些文件。
+- commit 列表。
+- 是否有冲突。
+- pipeline 是否通过。
+- 是否可以 merge。
+
+### 19.8 网页上合并 MR
+
+等同于终端：
+
+```bash
+git switch target-branch
+git merge feature/your-change-name
+git push origin target-branch
+```
+
+网页操作：
+
+1. 打开 MR 页面。
+2. 确认 `Source branch` 和 `Target branch` 没选错。
+3. 查看 changed files。
+4. 确认 reviewer 已同意。
+5. 确认 pipeline 通过。
+6. 如果页面显示 `Merge` 按钮可用，点击 `Merge`。
+
+合并后，工作分支的 commit 会进入目标分支。
+
+如果页面提示冲突：
+
+- 简单冲突可以用 GitLab 页面提示解决。
+- 复杂冲突建议拉到本地用终端或 IDE 解决。
+
+### 19.9 网页上确认是否合并成功
+
+方法 1：看 MR 状态。
+
+```text
+Merge requests -> 找到你的 MR -> 状态应为 Merged
+```
+
+方法 2：看目标分支提交记录。
+
+```text
+Repository -> Commits -> 分支选择 target branch
+```
+
+确认能看到你的 commit 或 merge commit。
+
+方法 3：看目标分支文件内容。
+
+```text
+Repository -> Files -> 分支选择 target branch -> 打开文件
+```
+
+确认文件内容已经变成新版本。
+
+方法 4：看 Branches。
+
+```text
+Repository -> Branches -> 搜索 target branch
+```
+
+确认目标分支最新 commit 时间和提交信息。
+
+### 19.10 网页操作和终端操作的对应关系
+
+| 目标 | 终端命令 | GitLab 网页操作 |
+|---|---|---|
+| 连接 GitLab | `git clone <url>` | 浏览器打开 GitLab 项目页面 |
+| 查看分支 | `git branch -a` | Repository -> Branches |
+| 创建分支 | `git switch -c feature/x origin/test` | Branches -> New branch |
+| 修改文件 | 本地编辑器改文件 | Repository -> Files -> Edit |
+| 新增文件 | `git add new_file` | Repository -> Files -> New file / Upload file |
+| 提交 | `git commit -m "..."` | 页面底部填写 commit message -> Commit changes |
+| 上传分支 | `git push -u origin feature/x` | 网页提交时 commit 已经直接在远端分支上 |
+| 创建 MR | GitLab 页面操作 | Merge requests -> New merge request |
+| 合并 | `git merge` + `git push` | MR 页面点击 Merge |
+| 验证远端结果 | `git log origin/test` | Repository -> Commits / Files |
+
+### 19.11 网页操作的安全检查
+
+网页 commit 前检查：
+
+- 当前分支是不是自己的工作分支。
+- 目标分支是不是团队要求的分支。
+- 文件内容没有密码、token、cookie、私钥。
+- 没有上传无关大文件。
+- commit message 清楚说明改动。
+
+创建 MR 前检查：
+
+- Source branch 是你的工作分支。
+- Target branch 是目标分支。
+- Changed files 里没有无关文件。
+- 描述里写清楚验证结果。
+
+点击 Merge 前检查：
+
+- reviewer 已同意。
+- pipeline 通过。
+- 没有冲突。
+- MR 目标分支正确。
+
+## 20. 最常用命令速查
 
 ```bash
 git clone https://gitlab.example.com/group/project.git
