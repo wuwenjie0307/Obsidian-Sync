@@ -1,4 +1,4 @@
----
+﻿---
 tags: [index, obsidian-graph]
 ---
 
@@ -32,6 +32,7 @@ tags: [index, obsidian-graph]
 
 ## 视频 / 音频链路
 
+- [[projects/joying-bot-server/changelog/h20-video-perf-logging-2026-06-03|h20-video-perf-logging-2026-06-03]]
 - [[projects/joying-bot-server/changelog/h20-audio-conversion-ffmpeg-binary-2026-05-29|h20-audio-conversion-ffmpeg-binary-2026-05-29]]
 - [[projects/joying-bot-server/changelog/h20-cover-first-frame-sync-check-2026-05-29|h20-cover-first-frame-sync-check-2026-05-29]]
 - [[projects/joying-bot-server/changelog/h20-latentsync-guidance-scale-1-8-2026-06-01|h20-latentsync-guidance-scale-1-8-2026-06-01]]
@@ -55,3 +56,4 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/changelog/h20-new-repo-deploy|h20-new-repo-deploy]]
 - [[projects/joying-bot-server/changelog/llm-stream-disconnect-fallback-2026-05-29|llm-stream-disconnect-fallback-2026-05-29]]
+
