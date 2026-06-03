@@ -654,3 +654,60 @@ CDN=https://videos-test.joyingai.cn/video/crm/20260603/user4_1780490654887_64179
 
 - 如果产品要求更高并发试听，可继续扩展 `voice_audition_api_bases` 到多个独立 VoxCPM 试听实例。
 - 如果试听量继续上升，再做异步试听任务：提交返回 `audition_task_id`，前端轮询结果，避免 HTTP 长请求。
+
+## 2026-06-03 试听接口并发治理纠正：独立 Docker + t_comfyui_config 试听池
+
+用户纠正：不能让 `/crm/voice_clone_audition` 直接领取现有 `config_key='comfyui_url'` 的视频生成模型池，因为那会占用完整视频生成的 `VoxCPM + LatentSync` 成对资源。正确方案是重新起 VoxCPM-only 的试听 Docker 服务，并继续复用 `t_comfyui_config` 的资源锁语义。
+
+### 修正后的设计
+
+- 视频生成池继续使用：`config_key='comfyui_url'`，一行代表 `VoxCPM + LatentSync` 成对服务。
+- 试听专用池使用：`config_key='voice_audition_url'`，一行只代表 VoxCPM 试听服务。
+- 试听接口只读取 `config_value_audio` 作为 VoxCPM base，不调用 `config_value` / LatentSync。
+- `is_active` 仍沿用模型池语义：`1=空闲`，`2=使用中`，抢不到时返回 `503 试听服务繁忙，请稍后重试`。
+- 测试库当前查询 `voice_audition_url` 为空，后续需要先起试听 Docker 并插入 DB 行后才能实机验证。
+
+### 本地代码状态
+
+- 新增 `router/service/voice_audition_pool_service.py`。
+- `/crm/voice_clone_audition` 已从旧 Redis slot helper 改为领取 `voice_audition_url` lease。
+- `deploy/docker/docker-compose.h20.pool.yml` 补了 `voxcpm-audition-api-1`，默认端口 `8128`。
+- `deploy/docker/README.md` 补了 DB 初始化 SQL 和不要覆盖现场四组 compose 的提醒。
+
+### DB 初始化口径
+
+```sql
+INSERT INTO zhugedata_test.t_comfyui_config
+  (config_key, config_value_audio, config_value, is_active, description, type)
+VALUES
+  ('voice_audition_url',
+   'http://127.0.0.1:8128',
+   'http://127.0.0.1:8128',
+   1,
+   'h20 voice audition voxcpm 1',
+   2);
+```
+
+`config_value` 填同一个 URL 只是为了兼容旧表非空字段，Bot 实际只用 `config_value_audio`。
+
+### 本地验证
+
+```text
+python -m unittest test.test_voice_audition_pool_service test.test_voice_clone_upload test.test_scheduled_video_voice_params
+Ran 28 tests OK
+
+python -m py_compile router/service/voice_audition_pool_service.py router/crm_server.py scheduler/collect_scheduler.py
+OK
+
+git diff --check
+OK，仅有 LF/CRLF 警告
+```
+
+### 后续实机步骤
+
+1. 确认 h20 GPU 分配，避免新的试听 VoxCPM 和视频生成池抢同一张卡。
+2. 在 h20 现场 compose 里追加 `voxcpm-audition-api-1`，不要整文件覆盖现场四组视频池 compose。
+3. 启动 `8128` 并检查 `/health`。
+4. 插入 `voice_audition_url` DB 行。
+5. 部署/重启 Bot，使 8100/48100 入口吃到新代码。
+6. 调 `/crm/voice_clone_audition` 验证：正常试听走 `8128`，并且 `comfyui_url` 视频池行不被锁。
