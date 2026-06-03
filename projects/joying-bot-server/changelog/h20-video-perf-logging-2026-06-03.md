@@ -1,4 +1,4 @@
-﻿---
+---
 date: "2026-06-03"
 tags: [changelog, h20, video-generation, performance, logging, voxcpm, latentsync]
 ---

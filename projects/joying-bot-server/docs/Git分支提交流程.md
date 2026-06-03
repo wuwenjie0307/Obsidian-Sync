@@ -1,4 +1,4 @@
-﻿---
+---
 tags: [git, workflow, test, deploy]
 updated: 2026-05-29
 ---

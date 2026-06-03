@@ -1,4 +1,4 @@
----
+﻿---
 tags: [index, obsidian-graph]
 ---
 
@@ -8,6 +8,7 @@ tags: [index, obsidian-graph]
 
 ## H20 / Docker / 模型服务
 
+- [[projects/joying-bot-server/docs/h20-8110-voxcpm-rollback-impact-2026-06-03|h20-8110-voxcpm-rollback-impact-2026-06-03]]
 - [[projects/joying-bot-server/docs/h20-docker-model-service-check-2026-06-02|h20-docker-model-service-check-2026-06-02]]
 - [[projects/joying-bot-server/docs/h20-docker-multiopen-execution-plan-2026-06-02|h20-docker-multiopen-execution-plan-2026-06-02]]
 - [[projects/joying-bot-server/docs/h20-model-pool-ops-handoff-2026-06-02|h20-model-pool-ops-handoff-2026-06-02]]
@@ -16,6 +17,8 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/docs/模型更换方案|模型更换方案]]
 
 ## 部署 / 运维 / 环境
+
+- [[projects/joying-bot-server/docs/正式服视频合成失败日志排查|正式服视频合成失败日志排查]]
 
 - [[projects/joying-bot-server/docs/代码部署到服务器|代码部署到服务器]]
 - [[projects/joying-bot-server/docs/开发资源与账号|开发资源与账号]]
@@ -32,3 +35,5 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/docs/Skills与MCP完整清单|Skills与MCP完整清单]]
 - [[projects/joying-bot-server/docs/数据库提示词更新指南|数据库提示词更新指南]]
+
+
