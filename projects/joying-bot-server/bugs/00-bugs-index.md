@@ -8,6 +8,7 @@ tags: [index, obsidian-graph]
 
 ## H20 / 视频链路
 
+- [[projects/joying-bot-server/bugs/h20-heygem-video-quality-reencode-2026-06-04|h20-heygem-video-quality-reencode-2026-06-04]]
 - [[projects/joying-bot-server/bugs/prod-6014-busy-task-8405-2026-06-04|prod-6014-busy-task-8405-2026-06-04]]
 
 - [[projects/joying-bot-server/bugs/h20-48100-old-manual-bot-2026-05-29|h20-48100-old-manual-bot-2026-05-29]]
