@@ -1,11 +1,59 @@
 ---
 tags: [gitlab, git, guide, beginner, workflow]
-updated: 2026-06-02
+updated: 2026-06-04
 ---
 
 # GitLab 新手连接、上传分支、合并指南
 
 这是一份通用流程，不绑定任何单个项目。把示例里的仓库地址、分支名、文件名替换成自己的即可。
+
+## joying-bot-server 当前推荐分支流程（2026-06-04）
+
+适用仓库：`https://git.joyingai.cn/services/crm.ai.joyingbot.git`
+
+这个项目不要把 `test` 当作个人草稿纸。`test` 是大家共享的测试/集成分支，`master` 是稳定/生产主干；个人改动先放到自己的工作分支，例如 `feature/lucky-voice-audition`、`fix/lucky-voice-audition-concurrency`、`lucky-test/<task-name>`。
+
+以后让 Codex/助手帮忙提交分支时，默认按这个流程走：
+
+1. 开始前先看 `git status --short --branch`，确认哪些改动属于本次任务，哪些是别人或之前留下的改动。
+2. 先 `git fetch origin --prune`，确认远端可达，并拿到最新远端分支信息。
+3. 从最新 `origin/test` 创建或更新个人工作分支，不直接在 `test` 上长期开发。
+4. 在个人分支上改代码、跑测试、提交 commit。
+5. 先 push 个人分支：`git push -u origin <branch>`。
+6. 合入 `test` 前，再把最新 `origin/test` 合到个人分支，冲突在个人分支解决。
+7. 测试通过并得到明确确认后，再创建 GitLab MR：`<branch> -> test`。
+8. 只有团队明确要求或紧急场景，才允许本地直接 merge/push 到 `test`。
+
+推荐命令：
+
+```bash
+git status --short --branch
+git fetch origin --prune
+git switch test
+git pull --ff-only origin test
+git switch -c feature/<task-name>
+
+# edit / test / commit
+git add <files>
+git commit -m "fix: describe the change"
+git push -u origin feature/<task-name>
+
+# before MR / merge
+git fetch origin --prune
+git switch feature/<task-name>
+git merge origin/test
+# resolve conflicts, run tests
+git push origin feature/<task-name>
+# GitLab MR: feature/<task-name> -> test
+```
+
+如果本地没有 `test` 分支，可以用：
+
+```bash
+git switch -c test origin/test
+```
+
+这个流程不能保证永远没有冲突；它的作用是把冲突留在个人分支里解决，不影响大家正在使用的 `test`。简单理解：`test` 是大家共用的试验台，个人分支才是自己的草稿纸。
 
 ## 0. 先理解几个概念
 

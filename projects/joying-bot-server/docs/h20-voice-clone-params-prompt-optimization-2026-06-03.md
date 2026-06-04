@@ -711,3 +711,85 @@ OK，仅有 LF/CRLF 警告
 4. 插入 `voice_audition_url` DB 行。
 5. 部署/重启 Bot，使 8100/48100 入口吃到新代码。
 6. 调 `/crm/voice_clone_audition` 验证：正常试听走 `8128`，并且 `comfyui_url` 视频池行不被锁。
+
+## 2026-06-04 试听专用 VoxCPM 8128 h20 落地验证
+
+本轮按“独立 Docker + `t_comfyui_config.config_key='voice_audition_url'`”最终方案完成 h20 测试环境落地。早期 Redis slot 方案仅作为历史记录保留，当前最终口径以本节为准。
+
+### 部署结果
+
+- `origin/test` 已推送到 `0cddb187`，Jenkins 已生成当前目录：`/data/project/test_ai_botserver.20260604103337`。
+- h20 live compose 已备份后追加 `voxcpm-audition-api-1`，没有覆盖现场运行容器。
+- 新试听容器：`voxcpm-audition-api-h20-test-1`。
+- 试听端口：`8128`。
+- GPU：`7`。
+- 健康检查：`http://127.0.0.1:8128/health` 返回 ok。
+- 8100 公网入口对应 Bot 已从当前 Jenkins 目录启动：`/data/project/test_ai_botserver.20260604103337`。
+
+### DB 配置
+
+`t_comfyui_config` 已新增试听池行：
+
+```text
+id=12
+config_key=voice_audition_url
+config_value_audio=http://127.0.0.1:8128
+config_value=http://127.0.0.1:8128
+is_active=1
+type=2
+description=h20 voice audition voxcpm 1
+```
+
+### 实测结果
+
+- 正常试听：HTTP 200 / `code=200`，返回 CDN wav：`https://videos-test.joyingai.cn/video/crm/20260604/user4_1780540878704_caf7814160974894.wav`。
+- 繁忙分支：临时把 id=12 置为 `is_active=2` 后调用 `/crm/voice_clone_audition`，返回 HTTP 503 / `试听服务繁忙，请稍后重试`；测试后已恢复 id=12 为 `is_active=1`。
+- DB 复查：`voice_audition_url` 行释放回 1；`comfyui_url` 视频池 h20 行 1/2/10/11 保持 1，试听接口没有领取视频生成池。
+
+### 注意事项
+
+- h20 当前 live compose 文件本身只包含第一组服务，额外 2/3/4 组容器仍在运行，但相对当前 compose 是 orphan。后续不要使用 `--remove-orphans`。
+- 当前本机到公网 `223.112.222.90:48100` 仍 TCP 超时；h20 内网 `8100/status/check` 正常。
+- h20 启动日志会打印完整配置，包含敏感字段；排查时不要 tail 完整配置日志，不要把日志原文写入回复或 Obsidian。
+
+## 2026-06-04 h20 试听专用 VoxCPM 池实机落地
+
+最终口径：早期 Redis slot 试听限流方案已被替代，不再作为当前实现口径。当前实现使用独立 Docker VoxCPM 服务 + `t_comfyui_config.config_key='voice_audition_url'`，试听接口不会领取 `config_key='comfyui_url'` 的完整视频生成模型池。
+
+### h20 现场变更
+
+- `origin/test` 已推送到 `0cddb187`，Jenkins 部署目录为 `/data/project/test_ai_botserver.20260604103337`。
+- `8100` 公网入口对应的 Bot 已重启到当前 Jenkins 目录，和 `8017` 一致。
+- 现场 compose 备份：`/data/project/test_ai_botserver/deploy/docker/docker-compose.h20.yml.bak.20260604101303`。
+- 只追加并启动了试听服务：`voxcpm-audition-api-h20-test-1`。
+- 试听服务端口：`8128`，健康检查 `http://127.0.0.1:8128/health` 返回 ok。
+- 本次 h20 试听容器使用 GPU `7`。选择原因：现有 VoxCPM 视频池使用 GPU `0/1/3/5`，GPU `7` 当前显存占用极低；但它仍与 `latentsync-api-h20-test-4` 同卡，后续高并发时需要继续观察。不要默认照搬本地 `.pool.yml` 里的 GPU 占位值，未来部署前仍需重新确认 GPU 分配。
+
+### DB 配置
+
+测试库已插入试听池行：
+
+```text
+id=12
+config_key=voice_audition_url
+config_value_audio=http://127.0.0.1:8128
+config_value=http://127.0.0.1:8128
+is_active=1
+type=2
+description=h20 voice audition voxcpm 1
+```
+
+`config_value` 只作为旧表字段占位，Bot 实际只使用 `config_value_audio`。
+
+### 实测结果
+
+- 正常试听：`POST /crm/voice_clone_audition` 返回 HTTP 200 / `code=200`，生成 CDN wav。
+- 资源释放：请求结束后 `voice_audition_url` 行恢复 `is_active=1`。
+- 视频池隔离：`comfyui_url` 视频池行保持原状态，未被试听接口锁定。
+- 繁忙分支：临时将 `voice_audition_url` 行置为 `is_active=2` 后，试听接口返回 HTTP 503 / `试听服务繁忙，请稍后重试`；随后已恢复为 `is_active=1`。
+
+### 遗留观察
+
+- 当前网络访问外部 `http://223.112.222.90:48100/status/check` 仍为 HTTP 000/TCP 超时；h20 内网 `8100/status/check` 正常。
+- 8100 启动日志会打印完整配置，包含敏感字段；后续应推动配置日志脱敏。
+- Machine 级临时环境变量 `H20_JUMP_PASSWORD` 需要用户在管理员 PowerShell 手动清理。
