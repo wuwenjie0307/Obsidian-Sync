@@ -8,6 +8,8 @@ tags: [index, obsidian-graph]
 
 ## H20 / Docker / 模型服务
 
+- [[projects/joying-bot-server/docs/h20-voice-audition-audio-params-2026-06-04|h20-voice-audition-audio-params-2026-06-04]]
+
 - [[projects/joying-bot-server/docs/h20-voice-clone-params-prompt-optimization-2026-06-03|h20-voice-clone-params-prompt-optimization-2026-06-03]]
 
 - [[projects/joying-bot-server/docs/h20-8110-voxcpm-rollback-impact-2026-06-03|h20-8110-voxcpm-rollback-impact-2026-06-03]]
@@ -37,6 +39,7 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/docs/Skills与MCP完整清单|Skills与MCP完整清单]]
 - [[projects/joying-bot-server/docs/数据库提示词更新指南|数据库提示词更新指南]]
+
 
 
 

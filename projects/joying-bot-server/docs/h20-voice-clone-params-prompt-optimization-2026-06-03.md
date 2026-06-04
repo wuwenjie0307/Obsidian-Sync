@@ -1,4 +1,4 @@
-﻿---
+---
 date: "2026-06-03"
 status: open
 tags: [h20, voice-clone, voxcpm, prompt, todo, crm]
@@ -793,3 +793,159 @@ description=h20 voice audition voxcpm 1
 - 当前网络访问外部 `http://223.112.222.90:48100/status/check` 仍为 HTTP 000/TCP 超时；h20 内网 `8100/status/check` 正常。
 - 8100 启动日志会打印完整配置，包含敏感字段；后续应推动配置日志脱敏。
 - Machine 级临时环境变量 `H20_JUMP_PASSWORD` 需要用户在管理员 PowerShell 手动清理。
+## 2026-06-04 新增三路试听 VoxCPM Docker 实例
+
+本轮根据“提升试听接口并发”的要求，在 h20 测试服现有 `8128` 试听专用 VoxCPM 基础上，新增三个 VoxCPM-only Docker 实例，并继续接入 `t_comfyui_config.config_key='voice_audition_url'` 试听池。
+
+### 现场变更
+
+- 当前 Jenkins 软链：`/data/project/test_ai_botserver -> /data/project/test_ai_botserver.20260604111537`
+- 备份 compose：`/data/project/test_ai_botserver/deploy/docker/docker-compose.h20.pool.yml.bak.20260604140815`
+- 已追加 compose 服务：
+  - `voxcpm-audition-api-2` / container `voxcpm-audition-api-h20-test-2` / port `8129` / GPU `2`
+  - `voxcpm-audition-api-3` / container `voxcpm-audition-api-h20-test-3` / port `8130` / GPU `4`
+  - `voxcpm-audition-api-4` / container `voxcpm-audition-api-h20-test-4` / port `8131` / GPU `6`
+- 原有试听实例继续保留：`voxcpm-audition-api-h20-test-1` / port `8128` / 实际 GPU `7`
+
+### DB 试听池
+
+`t_comfyui_config` 当前 `voice_audition_url` 行：
+
+```text
+id=12  http://127.0.0.1:8128  is_active=1  h20 voice audition voxcpm 1
+id=13  http://127.0.0.1:8129  is_active=1  h20 voice audition voxcpm 2
+id=14  http://127.0.0.1:8130  is_active=1  h20 voice audition voxcpm 3
+id=15  http://127.0.0.1:8131  is_active=1  h20 voice audition voxcpm 4
+```
+
+### 验证结果
+
+健康检查：
+
+```text
+8100/status/check ok
+8128/health ok
+8129/health ok
+8130/health ok
+8131/health ok
+```
+
+4 并发验证：
+
+```text
+concurrency=4
+ok=4
+busy_503=0
+bad400=0
+total_elapsed=54.415s
+```
+
+返回 CDN：
+
+```text
+https://videos-test.joyingai.cn/video/crm/20260604/user4_1780553557579_3db4f8cac8c77688.wav
+https://videos-test.joyingai.cn/video/crm/20260604/user4_1780553545882_bb40af4ad0bab085.wav
+https://videos-test.joyingai.cn/video/crm/20260604/user4_1780553536155_dd9b6d38eb4d38f7.wav
+https://videos-test.joyingai.cn/video/crm/20260604/user4_1780553569250_5b84bd61efa69298.wav
+```
+
+5 并发溢出验证：
+
+```text
+concurrency=5
+ok=2
+busy_503=0
+bad400=3
+total_elapsed=58.748s
+```
+
+结论：新增三路 Docker 后，测试服试听接口当前可以稳定支持 `4` 个并发成功生成。第 `5` 个并发不是理想的 `503 试听服务繁忙`，而是仍可能进入生成链路并返回短音频 `400`。后续仍需要修正试听池抢占/溢出保护逻辑，让超过池容量的请求直接返回 `503`，不要打进 VoxCPM。
+
+## 2026-06-04 试听模型池实际调用核验
+
+本次核验目标：确认 h20 测试服当前试听模型池是否只是写入了 `zhugedata_test.t_comfyui_config`，还是已经被 `/crm/voice_clone_audition` 真实调用。
+
+### DB 当前状态
+
+只读查询 `zhugedata_test.t_comfyui_config` 中 `config_key='voice_audition_url'` 的试听池行，当前 4 条均为空闲：
+
+```text
+id=12  config_key=voice_audition_url  config_value_audio=http://127.0.0.1:8128  config_value=http://127.0.0.1:8128  is_active=1  type=2  description=h20 voice audition voxcpm 1
+id=13  config_key=voice_audition_url  config_value_audio=http://127.0.0.1:8129  config_value=http://127.0.0.1:8129  is_active=1  type=2  description=h20 voice audition voxcpm 2
+id=14  config_key=voice_audition_url  config_value_audio=http://127.0.0.1:8130  config_value=http://127.0.0.1:8130  is_active=1  type=2  description=h20 voice audition voxcpm 3
+id=15  config_key=voice_audition_url  config_value_audio=http://127.0.0.1:8131  config_value=http://127.0.0.1:8131  is_active=1  type=2  description=h20 voice audition voxcpm 4
+```
+
+`is_active=1` 表示这些试听专用 VoxCPM 实例当前都处于可领取状态。
+
+### 8100 日志核验结果
+
+查看 h20 上 `/tmp/bot_8100_test_ai_botserver.log` 最近日志，已经看到 `/crm/voice_clone_audition` 明确进入试听池领取逻辑，并调用对应 VoxCPM 地址：
+
+```text
+voiceAuditionPool 领取试听资源成功 config_id=12 voxcpm_api_base=http://127.0.0.1:8128
+voiceAudition 调用 h20 API: config_id=12 url=http://127.0.0.1:8128/v1/clone-voice
+
+voiceAuditionPool 领取试听资源成功 config_id=13 voxcpm_api_base=http://127.0.0.1:8129
+voiceAudition 调用 h20 API: config_id=13 url=http://127.0.0.1:8129/v1/clone-voice
+```
+
+最近日志统计：
+
+```text
+config_id=12: 46 次池相关日志命中，8128 URL 69 次命中
+config_id=13: 4 次池相关日志命中，8129 URL 6 次命中
+config_id=14: 0 次
+config_id=15: 0 次
+```
+
+### 当前结论
+
+试听模型池已经真正被调用起来，不是只存在于 DB 表里。
+
+但当前自然请求日志只证明：
+
+```text
+8128 / config_id=12 已被真实调用
+8129 / config_id=13 已被真实调用
+8130 / config_id=14 已配置、空闲，但暂未看到自然请求命中
+8131 / config_id=15 已配置、空闲，但暂未看到自然请求命中
+```
+
+### 为什么 8130 / 8131 暂时没被打到
+
+本地池领取逻辑位于 `router/service/voice_audition_pool_service.py`：
+
+```python
+session.query(model_cls)
+.filter(
+    model_cls.config_key == VOICE_AUDITION_CONFIG_KEY,
+    model_cls.is_active == VOICE_AUDITION_AVAILABLE_STATUS,
+)
+.order_by(model_cls.id.asc())
+.with_for_update()
+.first()
+```
+
+也就是按 `id asc` 领取第一条可用资源。当前顺序是：
+
+```text
+12 -> 13 -> 14 -> 15
+```
+
+只要 `12` 在请求真正进入 VoxCPM 调用前已经释放，下一个请求就会继续拿 `12`。另外 CRM 试听接口在 `router/crm_server.py` 中是先做参考音频 ASR：
+
+```python
+reference_text = _transcribe_voice_audition_reference_text(voice_file_url)
+audition_lease = acquire_voice_audition_api_base()
+```
+
+所以多个并发请求会先在 ASR 阶段错开，真正开始抢试听池时不一定同时到达，导致 `12` 经常已经空闲，后面的 `14/15` 不容易自然被选中。
+
+### 后续待办
+
+1. 做一次强验证：临时将 `id=12、13` 置为忙碌，发起一次试听请求，确认是否领取 `id=14 / 8130`，随后恢复。
+2. 再临时将 `id=12、13、14` 置为忙碌，发起一次试听请求，确认是否领取 `id=15 / 8131`，随后恢复。
+3. 优化试听池分配策略，避免永远偏向最小 id：可考虑轮询、随机、或记录最近使用时间。
+4. 继续评估是否需要把资源领取提前到 ASR 前，或者将 ASR 也纳入整体并发保护，避免前端“正在生成试听”时请求已经在前置阶段排队。
+5. 超过试听池容量时应稳定返回 `503 试听服务繁忙`，不要进入 VoxCPM 后再返回短音频 `400`。

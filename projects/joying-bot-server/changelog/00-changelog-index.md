@@ -8,6 +8,7 @@ tags: [index, obsidian-graph]
 
 ## H20 / Docker / 模型服务
 
+- [[projects/joying-bot-server/changelog/h20-heygem-lip-model-pool-2026-06-04|h20-heygem-lip-model-pool-2026-06-04]]
 - [[projects/joying-bot-server/changelog/h20-docker-env-alignment-2026-06-02|h20-docker-env-alignment-2026-06-02]]
 - [[projects/joying-bot-server/changelog/h20-docker-performance-baseline-2026-06-02|h20-docker-performance-baseline-2026-06-02]]
 - [[projects/joying-bot-server/changelog/h20-docker-production-alignment-gap-2026-06-02|h20-docker-production-alignment-gap-2026-06-02]]
@@ -56,4 +57,7 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/changelog/h20-new-repo-deploy|h20-new-repo-deploy]]
 - [[projects/joying-bot-server/changelog/llm-stream-disconnect-fallback-2026-05-29|llm-stream-disconnect-fallback-2026-05-29]]
+
+
+- [[projects/joying-bot-server/changelog/h20-heygem-lip-model-pool-2026-06-04|h20-heygem-lip-model-pool-2026-06-04]]
 
