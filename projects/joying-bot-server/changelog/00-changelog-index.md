@@ -34,6 +34,7 @@ tags: [index, obsidian-graph]
 ## 视频 / 音频链路
 
 - [[projects/joying-bot-server/changelog/h20-voice-long-text-default-speed-prompt-2026-06-04|h20-voice-long-text-default-speed-prompt-2026-06-04]]
+- [[projects/joying-bot-server/changelog/h20-voice-emotion-prompts-2-6-2026-06-04|h20-voice-emotion-prompts-2-6-2026-06-04]]
 
 - [[projects/joying-bot-server/changelog/h20-voice-emotion-prompts-test-2026-06-04|h20-voice-emotion-prompts-test-2026-06-04]]
 - [[projects/joying-bot-server/changelog/h20-video-perf-logging-2026-06-03|h20-video-perf-logging-2026-06-03]]
@@ -60,6 +61,7 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/changelog/h20-new-repo-deploy|h20-new-repo-deploy]]
 - [[projects/joying-bot-server/changelog/llm-stream-disconnect-fallback-2026-05-29|llm-stream-disconnect-fallback-2026-05-29]]
+
 
 
 
