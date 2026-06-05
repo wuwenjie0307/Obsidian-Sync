@@ -7,6 +7,8 @@ tags: [index, obsidian-graph]
 > 鍥捐氨鍏ュ彛锛氶」鐩瑙堥摼鎺ュ埌鏈〉锛屾湰椤甸摼鎺ュ埌鍏蜂綋 bug 璁板綍銆?
 ## H20 / 瑙嗛閾捐矾
 
+- [[projects/joying-bot-server/bugs/h20-8100-runtime-stale-release-2026-06-05|h20-8100-runtime-stale-release-2026-06-05]]
+
 - [[projects/joying-bot-server/bugs/h20-8100-crm-voice-params-not-forwarded-2026-06-05|h20-8100-crm-voice-params-not-forwarded-2026-06-05]]
 
 - [[projects/joying-bot-server/bugs/h20-heygem-video-quality-reencode-2026-06-04|h20-heygem-video-quality-reencode-2026-06-04]]
@@ -31,6 +33,7 @@ tags: [index, obsidian-graph]
 ## 閰嶇疆 / 鏁版嵁搴?/ LLM
 
 - [[projects/joying-bot-server/bugs/config-h20-api-base-not-in-available-setting-2026-05-29|config-h20-api-base-not-in-available-setting-2026-05-29]]
+- [[projects/joying-bot-server/bugs/codex-long-form-writing-stream-disconnect-2026-06-05|codex-long-form-writing-stream-disconnect-2026-06-05]]
 - [[projects/joying-bot-server/bugs/h20-config-overwrite-mysql-host-2026-05-29|h20-config-overwrite-mysql-host-2026-05-29]]
 - [[projects/joying-bot-server/bugs/llm-stream-disconnect-fallback-2026-05-29|llm-stream-disconnect-fallback-2026-05-29]]
 - [[projects/joying-bot-server/bugs/mysql-update-hangs-vscode|mysql-update-hangs-vscode]]
@@ -46,4 +49,5 @@ tags: [index, obsidian-graph]
 ## 鍏朵粬 Bug
 
 - [[projects/joying-bot-server/bugs/voice-clone-audition-500-h20-2026-05-29|voice-clone-audition-500-h20-2026-05-29]]
+
 
