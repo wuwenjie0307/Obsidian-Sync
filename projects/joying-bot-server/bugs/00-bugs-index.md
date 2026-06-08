@@ -13,6 +13,8 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/bugs/h20-heygem-video-quality-reencode-2026-06-04|h20-heygem-video-quality-reencode-2026-06-04]]
 - [[projects/joying-bot-server/bugs/prod-6014-busy-task-8405-2026-06-04|prod-6014-busy-task-8405-2026-06-04]]
+- [[projects/joying-bot-server/bugs/prod-lucky-video-status-handoff-9396-9399-2026-06-06|prod-lucky-video-status-handoff-9396-9399-2026-06-06]]
+- [[projects/joying-bot-server/bugs/prod-scheduler-montage-material-sync-2026-06-08|prod-scheduler-montage-material-sync-2026-06-08]]
 
 - [[projects/joying-bot-server/bugs/h20-48100-old-manual-bot-2026-05-29|h20-48100-old-manual-bot-2026-05-29]]
 - [[projects/joying-bot-server/bugs/h20-ass-subtitle-whisper-timeout-2026-06-01|h20-ass-subtitle-whisper-timeout-2026-06-01]]
@@ -49,5 +51,6 @@ tags: [index, obsidian-graph]
 ## 鍏朵粬 Bug
 
 - [[projects/joying-bot-server/bugs/voice-clone-audition-500-h20-2026-05-29|voice-clone-audition-500-h20-2026-05-29]]
+
 
 

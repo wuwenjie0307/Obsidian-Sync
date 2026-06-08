@@ -8,6 +8,8 @@ tags: [index, obsidian-graph]
 
 ## H20 / Docker / 模型服务
 
+- [[projects/joying-bot-server/docs/h20-recent-video-task-output-params-2026-06-05|h20-recent-video-task-output-params-2026-06-05]]
+
 - [[projects/joying-bot-server/docs/h20-runtime-task-model-pool-check-2026-06-05|h20-runtime-task-model-pool-check-2026-06-05]]
 
 - [[projects/joying-bot-server/docs/h20-voice-audition-audio-params-2026-06-04|h20-voice-audition-audio-params-2026-06-04]]
