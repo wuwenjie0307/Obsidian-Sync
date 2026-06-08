@@ -7,6 +7,8 @@ tags: [index, obsidian-graph]
 > 鍥捐氨鍏ュ彛锛氶」鐩瑙堥摼鎺ュ埌鏈〉锛屾湰椤甸摼鎺ュ埌鍏蜂綋 bug 璁板綍銆?
 ## H20 / 瑙嗛閾捐矾
 
+- [[projects/joying-bot-server/bugs/h20-montage-voice-speed-subtitle-2026-06-08|h20-montage-voice-speed-subtitle-2026-06-08]]
+
 - [[projects/joying-bot-server/bugs/h20-8100-runtime-stale-release-2026-06-05|h20-8100-runtime-stale-release-2026-06-05]]
 
 - [[projects/joying-bot-server/bugs/h20-8100-crm-voice-params-not-forwarded-2026-06-05|h20-8100-crm-voice-params-not-forwarded-2026-06-05]]
@@ -51,6 +53,7 @@ tags: [index, obsidian-graph]
 ## 鍏朵粬 Bug
 
 - [[projects/joying-bot-server/bugs/voice-clone-audition-500-h20-2026-05-29|voice-clone-audition-500-h20-2026-05-29]]
+
 
 
 
