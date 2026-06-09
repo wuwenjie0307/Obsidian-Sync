@@ -123,3 +123,14 @@ tags: [bug, h20, video-generation, montage, subtitle, voice-clone]
 - `C:\Users\admin\Desktop\joyingbot-new\router\service\video_server2\video_select_overlay.py`
 - `C:\Users\admin\Desktop\joyingbot-new\router\service\video_server2\voice_params.py`
 - `C:\Users\admin\Desktop\joyingbot-new\router\service\video_server\voxcpm_api.py`
+
+## 2026-06-09 根因补充
+
+最新排查认为，用户反馈的“倍速后字幕跟不上 / 后面口播消失”，更准确的根因是时间轴未同步：`voice_speed` 缩短了克隆口播音频，但模板视频仍以原始时长进入 LatentSync，导致最终视频和字幕可能长于真实口播音频。
+
+修复补充：
+
+- `video_work.py` 在克隆音频生成后读取 `clone_audio_duration`。
+- 在 LatentSync 前比较模板视频时长和克隆音频时长。
+- 当差异超过 `0.3s` 时，先把模板视频 trim/loop 到克隆音频时长，再上传并传给 LatentSync。
+- `video_time_align.py` 给 `align_video_to_audio()` 增加 `duration_padding` 参数；主视频模板对齐使用 `0.0`，混剪素材仍保留默认 `0.2`。

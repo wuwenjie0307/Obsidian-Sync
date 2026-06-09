@@ -71,3 +71,10 @@ tags: [index, obsidian-graph]
 
 
 
+- [[projects/joying-bot-server/changelog/h20-montage-voice-speed-clamp-2026-06-09|h20-montage-voice-speed-clamp-2026-06-09]]
+
+- [[projects/joying-bot-server/changelog/h20-montage-insert-audio-mix-2026-06-09|h20-montage-insert-audio-mix-2026-06-09]]
+
+- [[projects/joying-bot-server/changelog/h20-montage-material-audio-muted-policy-2026-06-09|h20-montage-material-audio-muted-policy-2026-06-09]]
+
+- [[projects/joying-bot-server/changelog/h20-voice-speed-video-timeline-align-2026-06-09|h20-voice-speed-video-timeline-align-2026-06-09]]

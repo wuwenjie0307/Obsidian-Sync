@@ -1,4 +1,4 @@
-﻿---
+---
 tags: [project, h20, hyperframes, ai-prd, decision-record]
 ---
 
@@ -66,3 +66,40 @@ tags: [project, h20, hyperframes, ai-prd, decision-record]
 - 分流点落在 scheduler 处理任务时：`1/2` 进入 HyperFrames 路线，`3/空/非法` 进入旧路线或生成前默认 3。
 - HyperFrames 路线应新增一个“生成标准化 lip-sync 视频”的内部函数，返回本地路径、URL、时长、克隆音频 URL；模型池锁在该函数成功后释放。
 - HyperFrames 后处理失败仍按任务失败处理，不回退旧路线。
+
+## 最终决策补充（2026-06-09）
+
+本节用于收口 2026-06-08 讨论中仍可能造成误读的两处口径。以下决策覆盖上文历史推荐项；历史内容保留为讨论轨迹，不作为 V1 执行口径。
+
+### 模型池释放
+
+最终决策：V1 继续沿用原始逻辑代码口径，整条视频生成链路完成或失败后，在最终 `finally` 释放 `t_comfyui_config` 模型池锁。
+
+不采用“HeyGem 标准化视频产物稳定可读后提前释放模型池”的方案。该方案只保留为 V2 吞吐优化候选。
+
+原因：
+
+1. 保持现有调度语义一致，减少任务状态拆分风险。
+2. HyperFrames 后处理仍属于本次任务完整生成链路。
+3. V1 优先保证正确性、失败闭环和回调一致性。
+
+### BGM 失败策略
+
+最终决策：V1 按原始逻辑代码口径处理 BGM。
+
+1. `hot_video_audio_url` 为空时，不加 BGM。
+2. `hot_video_audio_url` 有值但下载失败时，任务失败，建议失败码 `BGM_DOWNLOAD_FAILED`。
+3. `hot_video_audio_url` 有值但混音失败时，任务失败，建议失败码 `BGM_MIX_FAILED`。
+4. 不静默降级为无 BGM。
+5. 不从本地 BGM 目录随机选音频。
+
+原因：用户显式配置 BGM 时，下载或处理失败应暴露为输入或处理异常；静默无 BGM 会造成产物和预期不一致，后续排查困难。
+
+### 文档权威顺序
+
+如历史记录与最终 PRD 冲突，按以下顺序执行：
+
+1. `docs/h20-hyperframes-viral-template-ai-prd.md` 完整 PRD v0.4。
+2. `docs/h20-hyperframes-viral-template-ai-prd-condensed.md` 提炼版。
+3. `C:\Users\admin\Desktop\h20-hyperframes-development-order` 阶段拆解目录。
+4. Obsidian 历史讨论记录。
