@@ -1,11 +1,11 @@
-﻿---
+---
 tags: [index, obsidian-graph]
 ---
 
-# joying-bot-server Bug 璁板綍绱㈠紩
+# joying-bot-server Bug 记录索引
 
-> 鍥捐氨鍏ュ彛锛氶」鐩瑙堥摼鎺ュ埌鏈〉锛屾湰椤甸摼鎺ュ埌鍏蜂綋 bug 璁板綍銆?
-## H20 / 瑙嗛閾捐矾
+> 图谱入口：项目概览链接到本页，本页链接到具体 bug 记录。
+## H20 / 视频链路
 
 - [[projects/joying-bot-server/bugs/h20-montage-voice-speed-subtitle-2026-06-08|h20-montage-voice-speed-subtitle-2026-06-08]]
 
@@ -34,7 +34,7 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/bugs/torch-cuda124-incompatibility|torch-cuda124-incompatibility]]
 - [[projects/joying-bot-server/bugs/torchaudio-libcudart-missing|torchaudio-libcudart-missing]]
 
-## 閰嶇疆 / 鏁版嵁搴?/ LLM
+## 配置 / 数据库 / LLM
 
 - [[projects/joying-bot-server/bugs/config-h20-api-base-not-in-available-setting-2026-05-29|config-h20-api-base-not-in-available-setting-2026-05-29]]
 - [[projects/joying-bot-server/bugs/codex-long-form-writing-stream-disconnect-2026-06-05|codex-long-form-writing-stream-disconnect-2026-06-05]]
@@ -44,13 +44,13 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/bugs/voxcpm-reference-text-missing|voxcpm-reference-text-missing]]
 - [[projects/joying-bot-server/bugs/vscode-mysql-plugin-no-primary-key|vscode-mysql-plugin-no-primary-key]]
 
-## Git / 缃戠粶 / 鎿嶄綔闂
+## Git / 网络 / 操作问题
 
 - [[projects/joying-bot-server/bugs/agents-md-accidental-test-merge-2026-05-29|agents-md-accidental-test-merge-2026-05-29]]
 - [[projects/joying-bot-server/bugs/git-ambiguous-test-argument|git-ambiguous-test-argument]]
 - [[projects/joying-bot-server/bugs/h20-git-joyingai-network|h20-git-joyingai-network]]
 
-## 鍏朵粬 Bug
+## 其他 Bug
 
 - [[projects/joying-bot-server/bugs/voice-clone-audition-500-h20-2026-05-29|voice-clone-audition-500-h20-2026-05-29]]
 
@@ -59,3 +59,6 @@ tags: [index, obsidian-graph]
 
 
 - [[projects/joying-bot-server/bugs/h20-montage-insert-audio-muted-2026-06-09|h20-montage-insert-audio-muted-2026-06-09]]
+
+## 图谱接线补充
+- [[projects/joying-bot-server/bugs/multi-platform-auto-reply-json-cleanup-2026-06-05|multi-platform-auto-reply-json-cleanup-2026-06-05]]

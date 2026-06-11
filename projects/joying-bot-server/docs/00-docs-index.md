@@ -1,4 +1,4 @@
-﻿---
+---
 tags: [index, obsidian-graph]
 ---
 
@@ -53,3 +53,9 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/docs/prod-montage-material-sync-deferred-todo-2026-06-09|prod-montage-material-sync-deferred-todo-2026-06-09]]
 - [[projects/joying-bot-server/docs/h20-montage-voice-speed-status-2026-06-09|h20-montage-voice-speed-status-2026-06-09]]
+
+## 图谱接线补充
+- [[projects/joying-bot-server/docs/h20-hyperframes-prd-uncertainty-decisions-2026-06-08|h20-hyperframes-prd-uncertainty-decisions-2026-06-08]]
+- [[projects/joying-bot-server/docs/h20-old-heygem-model-retention-2026-06-03|h20-old-heygem-model-retention-2026-06-03]]
+
+- [[projects/joying-bot-server/docs/h20-hyperframes-local-lipsync-template-validation-2026-06-11|h20-hyperframes-local-lipsync-template-validation-2026-06-11]]

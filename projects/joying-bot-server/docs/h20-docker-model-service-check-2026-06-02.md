@@ -1,6 +1,9 @@
-﻿﻿﻿﻿﻿---
+---
 date: "2026-06-02"
-tags: [h20, docker, model-service, model-pool, ops]
+project: joying-bot-server
+type: doc
+tags: [doc, h20, docker, model-service, model-pool, ops]
+aliases: ["h20 Docker 模型服务调用与多开复核"]
 ---
 
 # h20 Docker 模型服务调用与多开复核
