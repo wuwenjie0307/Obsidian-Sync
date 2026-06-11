@@ -505,6 +505,18 @@ grep /proc/<pid>/root/app/voxcpm_api.py        # 无标记
 
 `8100` 是 botserver，不是 VoxCPM 模型服务。试听接口最终会调用 `8128` 等 VoxCPM 端口。音频生成噪音修复在 `voxcpm_api.py`，因此必须重启 VoxCPM 服务本身。
 
+补充：`3ef3d51e fix: segment VoxCPM long text generation` 这次长文本分段生成修复同样改在 `router/service/video_server/voxcpm_api.py`。它不改变前端字段，也不改变 `voxcpm_tts.py` 的 payload；要让服务吃到新代码，关键仍然是让 VoxCPM 模型 API 容器/进程重新加载 `voxcpm_api.py`。只重启 `8100` botserver 不会让 `8120/8122/8124/8126/8128/8129/8130/8131` 这些 VoxCPM 服务自动加载分段逻辑。
+
+这次分段生成修复的运行时标记：
+
+```text
+VOICE_CLONE_SEGMENT_TARGET_CHARS
+split_voice_clone_text
+generate_voice_clone_segment
+```
+
+如果宿主机文件有这些标记，但 `/proc/<pid>/root/app/voxcpm_api.py` 没有这些标记，说明 VoxCPM 容器/进程仍在跑旧代码。Docker bind mount 方式需要 restart 或 recreate VoxCPM 容器；镜像 COPY 方式需要 rebuild 镜像并 recreate 容器。
+
 ### 3. `/health` 返回 404
 
 区分服务类型：

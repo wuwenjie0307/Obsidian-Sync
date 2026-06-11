@@ -19,6 +19,7 @@ aliases: ["joyingbot-new 更新日志索引"]
 - [[projects/joyingbot-new/changelog/2026-06-10_voice_reference_asr_alignment|参考音频 ASR 对齐]]
 - [[projects/joyingbot-new/changelog/2026-06-10_voxcpm_huggingface_cache_migration|VoxCPM HuggingFace 缓存迁移]]
 - [[projects/joyingbot-new/changelog/2026-06-11_h20_preview_audio_reuse_flat_payload|H20 试听音频复用 flat payload]]
+- [[projects/joyingbot-new/changelog/2026-06-11_voxcpm_long_text_segment_generation|VoxCPM 长文本分段生成]]
 
 ## CRM / Prompt / 标签
 
