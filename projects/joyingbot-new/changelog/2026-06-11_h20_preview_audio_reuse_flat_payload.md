@@ -58,3 +58,30 @@ aliases: [H20 试听音频复用 flat payload]
 
 - [[projects/joyingbot-new/00-项目概览|项目概览]]
 - [[projects/joyingbot-new/changelog/00-changelog-index|更新日志索引]]
+## 2026-06-11 H20 端到端验证与测试服清理
+
+### 端到端结论
+
+- 14:14 左右完成的视频任务确认跑通了“试听音频保存为原音色 -> 作为克隆参考音频 -> 生成最终视频”的链路。
+- 对应任务：`job_id=1195`，`task_id=1172`，本地任务表 `id=1389`。
+- 任务状态：`task_status=3`，`progress=100`。
+- 最终视频：`https://videos-test.joyingai.cn/video/crm/20260611/user4_1781158525852_f5788df17446dbff.mp4`。
+- 用作音色克隆原音频的试听音频：`https://videos-test.joyingai.cn/video/crm/20260611/user4_1781158358486_75a63cadfb5f578a.wav`。
+- 任务入库音色参数为默认值：`voice_emotion=1`，`voice_speed=1.0`，`voice_volume=50`。
+- 运行日志中 `collect_scheduler.py` 的最终生成传参显示：`Original_audio_url=https://videos-test.joyingai.cn/video/crm/20260611/user4_1781158358486_75a63cadfb5f578a.wav`，说明最终视频确实使用该试听音频作为克隆参考音频。
+
+### 链路语义确认
+
+- 前端在试听阶段选择情绪、语速、音量等参数生成试听音频。
+- 用户选择“使用本次试听作为音色样本”后，保存形象时应保存试听接口返回的音频 URL 作为 `voice_file_url`。
+- 进入视频生成任务时，后端使用该 `voice_file_url` 作为原音色参考音频。
+- 因为情绪、语速、音量效果已经体现在试听生成的音频里，正式视频生成时音色克隆参数使用默认值，避免对同一效果二次叠加处理。
+
+### 测试服清理
+
+- 原卡住任务：`id=1384`，`job_id=1191`，`task_id=1168`。
+- 清理前状态：`task_status=2`，占用 `t_comfyui_config.id=17`，`is_active=2`。
+- 已将该任务标为失败：`task_status=4`，并释放模型池 `config_id=17` 为 `is_active=1`。
+- 中断期间遗留的新测试任务 `id=1390`，`job_id=1196`，`task_id=1173` 在清理前已自行生成成功，未强制改失败；对应 `config_id=16` 已自动释放。
+- 最终复查：`task_status IN (0,1,2)` 无记录，`t_comfyui_config.is_active=2` 无记录。
+- H20 服务状态：8100 与 8017 health 为 ok，18017 调度进程已重启成功并运行在 `/data/project/test_ai_botserver.20260611115843`。
