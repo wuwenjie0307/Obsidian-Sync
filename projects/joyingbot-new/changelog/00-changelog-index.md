@@ -1,4 +1,4 @@
----
+﻿---
 project: joyingbot-new
 type: index
 tags: [index, obsidian-graph, changelog]
@@ -24,7 +24,14 @@ aliases: ["joyingbot-new 更新日志索引"]
 ## CRM / Prompt / 标签
 
 - [[projects/joyingbot-new/changelog/2026-06-10_intent_tag_prompt_lookup|CRM 意向标签提示词定位记录]]
+- [[projects/joyingbot-new/changelog/2026-06-12_ai_client_activate_weekly_market_prompt|楼市周报提示词 150 字控制]]
 
 ## 视频格式 / 色彩
 
 - [[projects/joyingbot-new/changelog/2026-06-10_video_bt709_color_metadata|视频 BT.709 色彩元数据]]
+
+
+## 视频格式 / 色彩
+
+- [[projects/joyingbot-new/changelog/2026-06-12_video_orientation_metadata_cleanup|视频方向元数据清理修复]]
+
