@@ -103,3 +103,21 @@ tags: [project, h20, hyperframes, ai-prd, decision-record]
 2. `docs/h20-hyperframes-viral-template-ai-prd-condensed.md` 提炼版。
 3. `C:\Users\admin\Desktop\h20-hyperframes-development-order` 阶段拆解目录。
 4. Obsidian 历史讨论记录。
+## 最终决策补充（2026-06-15）
+
+### 回调字段 status/task_status
+
+结论：H20 后端 V1 继续沿用现网回调 payload 字段 `task_status`，不改为 `status`，也不主动新增模板字段。
+
+依据：
+
+1. apidoc CSM 项目接口 ID `713`，`/csm/agent/pc/video/generateTaskCallback` 请求示例写的是 `status`，这是当前文档样例口径。
+2. apidoc CSM `generateTaskList` 和 CRM `generateTaskStatusList` 返回字段均为 `task_status`。
+3. H20 现网代码 `crm/crm_request_util.py` 与 `scheduler/collect_scheduler.py` 的实际回调 payload 使用 `task_status`；本地成功 `task_status=3` 回调映射为 `task_status=7`，本地失败 `task_status=4` 回调映射为 `task_status=-1`。
+4. HyperFrames 阶段 07 已设计为复用原统一完成回调，不绕开原状态保存和 `callback_status` 记录。
+
+执行口径：
+
+- 后端提供并继续发送 `task_status`。
+- 不在 HyperFrames 新链路单独替换为 `status`。
+- 如果 CSM/CRM 明确要求兼容 `status`，再评估双字段兼容；不能直接删除或替换现网 `task_status`。
