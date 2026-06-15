@@ -16,3 +16,5 @@ aliases: ["joyingbot-new Bug 记录索引"]
 
 - [[projects/joyingbot-new/bugs/2026-06-09_voice_clone_audition_video_consistency|试听音频作为原音色的视频一致性问题]]
 - [[projects/joyingbot-new/bugs/2026-06-10_voice_reference_asr_duplicate_prefix|试听音频作为原音色后视频开头重复口播]]
+
+- [[projects/joyingbot-new/bugs/2026-06-15_voice_audition_route_and_pool_7001|测试服试听接口 404 与 VoxCPM 7001 端口失效]]

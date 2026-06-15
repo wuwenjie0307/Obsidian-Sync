@@ -35,3 +35,5 @@ aliases: ["joyingbot-new 更新日志索引"]
 
 - [[projects/joyingbot-new/changelog/2026-06-12_video_orientation_metadata_cleanup|视频方向元数据清理修复]]
 
+
+- [[projects/joyingbot-new/changelog/2026-06-15_voice_clone_tts_area_unit_normalization|声音克隆 TTS 面积单位 m² 规范化]]
