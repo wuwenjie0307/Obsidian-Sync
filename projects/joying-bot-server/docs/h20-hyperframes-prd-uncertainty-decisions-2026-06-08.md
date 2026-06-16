@@ -121,3 +121,24 @@ tags: [project, h20, hyperframes, ai-prd, decision-record]
 - 后端提供并继续发送 `task_status`。
 - 不在 HyperFrames 新链路单独替换为 `status`。
 - 如果 CSM/CRM 明确要求兼容 `status`，再评估双字段兼容；不能直接删除或替换现网 `task_status`。
+
+## 最终决策补充（2026-06-16）
+### 网感视频分支验收与数据库前置规则
+
+适用范围：当前 H20 网感视频 / HyperFrames 链路，尤其是 `feature/ai_v6.3.3_vibevideo -> test` 测试验收，以及后续 `feature/ai_v6.3.3_vibevideo -> master` 正式合并。
+
+硬规则：
+1. 测试服如果发现 bug，必须先修回 `feature/ai_v6.3.3_vibevideo`，再重新集成到 `test` 验收；不能只修 `test` 集成分支。
+2. `test` 集成分支只用于测试环境验收，不作为后续合入 `master` 的来源。
+3. 后续正式上 master 的来源必须是 `feature/ai_v6.3.3_vibevideo`。
+4. 合入或重启测试服前，必须确认测试库已经补齐网感视频相关 SQL 字段；否则即使代码合并成功，HyperFrames 新链路也可能因字段缺失无法运行。
+5. 当前涉及的 SQL 迁移文件包括：`sql/h20_hyperframes_template_routing.sql`、`sql/h20_hyperframes_whisper_timeline.sql`、`sql/h20_hyperframes_analysis.sql`、`sql/h20_hyperframes_cli.sql`、`sql/h20_hyperframes_upload_callback.sql`。
+
+执行口径：
+- 发现问题：先在功能分支修复、测试、提交、推送，再重新做 `feature -> test` 集成。
+- 验收通过：再评估从 `feature/ai_v6.3.3_vibevideo` 发起到 `master` 的 MR 或合并。
+- 不允许把只存在于 `test` 集成分支的修复当成正式发布依据。
+
+## 图谱链接
+- [[projects/joying-bot-server/00-项目概览|项目概览]]
+- [[projects/joying-bot-server/docs/00-docs-index|参考文档索引]]

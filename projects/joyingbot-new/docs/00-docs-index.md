@@ -1,15 +1,17 @@
----
+﻿---
 project: joyingbot-new
 type: index
 tags: [index, obsidian-graph, docs]
-aliases: ["joyingbot-new 参考文档索引"]
+aliases: ["joyingbot-new 鍙傝€冩枃妗ｇ储寮?]
 ---
 
-# joyingbot-new 参考文档索引
+# joyingbot-new 鍙傝€冩枃妗ｇ储寮?
+## H20 / 杩愮淮 / 妯″瀷鏈嶅姟
 
-## H20 / 运维 / 模型服务
+- [[projects/joyingbot-new/docs/2026-06-16_h20_branch_merge_runtime_check|H20 分支合并与运行状态复查 2026-06-16]]
 
-- [[projects/joyingbot-new/docs/2026-06-15_prod_voice_clone_release_db_ops|正式服音色克隆上线表变更与接口口径]]
-- [[projects/joyingbot-new/docs/2026-06-12_3090_test_server_runbook|3090 测试服运行手册]]
-- [[projects/joyingbot-new/docs/2026-06-10_h20_video_tmp_multi_service_sharing|H20 video_tmp 多服务共享实查]]
-- [[projects/joyingbot-new/docs/2026-06-11_voxcpm_noise_fix_deploy_runbook|VoxCPM 试听噪音修复部署 Runbook]]
+- [[projects/joyingbot-new/docs/2026-06-15_prod_voice_clone_release_db_ops|姝ｅ紡鏈嶉煶鑹插厠闅嗕笂绾胯〃鍙樻洿涓庢帴鍙ｅ彛寰刔]
+- [[projects/joyingbot-new/docs/2026-06-12_3090_test_server_runbook|3090 娴嬭瘯鏈嶈繍琛屾墜鍐宂]
+- [[projects/joyingbot-new/docs/2026-06-10_h20_video_tmp_multi_service_sharing|H20 video_tmp 澶氭湇鍔″叡浜疄鏌]
+- [[projects/joyingbot-new/docs/2026-06-11_voxcpm_noise_fix_deploy_runbook|VoxCPM 璇曞惉鍣煶淇閮ㄧ讲 Runbook]]
+
