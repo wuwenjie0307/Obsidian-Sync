@@ -91,6 +91,7 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/changelog/h20-hyperframes-phase08-acceptance-probe-2026-06-10|h20-hyperframes-phase08-acceptance-probe-2026-06-10]]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-merge-guard-route-switch-2026-06-10|h20-hyperframes-merge-guard-route-switch-2026-06-10]]
+- [[projects/joying-bot-server/changelog/h20-hyperframes-test-release-runtime-2026-06-16|h20-hyperframes-test-release-runtime-2026-06-16]]
 
 ## 图谱接线补充
 - [[projects/joying-bot-server/changelog/git-clean-feature-ai-v631-video-2026-06-04|git-clean-feature-ai-v631-video-2026-06-04]]
