@@ -59,3 +59,4 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/docs/h20-old-heygem-model-retention-2026-06-03|h20-old-heygem-model-retention-2026-06-03]]
 
 - [[projects/joying-bot-server/docs/h20-hyperframes-local-lipsync-template-validation-2026-06-11|h20-hyperframes-local-lipsync-template-validation-2026-06-11]]
+- [[projects/joying-bot-server/docs/h20-hyperframes-db-field-change-rules-2026-06-16|h20-hyperframes-db-field-change-rules-2026-06-16]]
