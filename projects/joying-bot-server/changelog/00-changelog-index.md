@@ -93,9 +93,11 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-merge-guard-route-switch-2026-06-10|h20-hyperframes-merge-guard-route-switch-2026-06-10]]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-test-release-runtime-2026-06-16|h20-hyperframes-test-release-runtime-2026-06-16]]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-runtime-automation-fix-2026-06-17|h20-hyperframes-runtime-automation-fix-2026-06-17]]
+- [[projects/joying-bot-server/changelog/h20-hyperframes-cover-python-pillow-fix-2026-06-17|h20-hyperframes-cover-python-pillow-fix-2026-06-17]]
 
 ## 图谱接线补充
 - [[projects/joying-bot-server/changelog/git-clean-feature-ai-v631-video-2026-06-04|git-clean-feature-ai-v631-video-2026-06-04]]
 - [[projects/joying-bot-server/changelog/h20-docker-model-pool-pair4-2026-06-03|h20-docker-model-pool-pair4-2026-06-03]]
 - [[projects/joying-bot-server/changelog/multi-platform-auto-reply-json-cleanup-2026-06-05|multi-platform-auto-reply-json-cleanup-2026-06-05]]
+
 

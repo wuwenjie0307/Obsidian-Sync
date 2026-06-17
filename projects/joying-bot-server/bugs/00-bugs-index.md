@@ -7,6 +7,8 @@ tags: [index, obsidian-graph]
 > 图谱入口：项目概览链接到本页，本页链接到具体 bug 记录。
 ## H20 / 视频链路
 
+- [[projects/joying-bot-server/bugs/h20-hyperframes-repeat-pitfalls-2026-06-17|h20-hyperframes-repeat-pitfalls-2026-06-17]]
+
 - [[projects/joying-bot-server/bugs/h20-montage-voice-speed-subtitle-2026-06-08|h20-montage-voice-speed-subtitle-2026-06-08]]
 
 - [[projects/joying-bot-server/bugs/h20-8100-runtime-stale-release-2026-06-05|h20-8100-runtime-stale-release-2026-06-05]]
@@ -65,5 +67,7 @@ tags: [index, obsidian-graph]
 
 
 ## H20 / 视频链路
+
 - [[projects/joying-bot-server/bugs/h20-montage-material-filter-is-mix-flag-2026-06-12|h20-montage-material-filter-is-mix-flag-2026-06-12]]
+
 
