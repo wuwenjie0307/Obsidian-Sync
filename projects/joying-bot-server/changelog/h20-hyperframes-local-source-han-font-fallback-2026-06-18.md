@@ -32,6 +32,20 @@ Bug fix / runtime visual stability。
 - `--cjk-font` 改为优先使用 `Source Han Sans SC Local`，再接 `Smiley Sans Local`、`Ma Shan Zheng Local` 和系统字体。
 - `science_guide` 与 `video_diary` 的 `titleFont/subtitleFont` 也改为优先使用 `Source Han Sans SC Local`，避免模板中 `var(--font)` 的正文层继续落到测试服不存在的系统字体。
 
+后续又发现：方框问题缓解后，部分视频仍出现“同一条中文里混有简体/繁体字形”的视觉问题。排查结论不是业务文本被转繁体；当前 HyperFrames 链路未发现 `opencc/toTraditional/zh-TW` 一类文本转换。更像是浏览器/HyperFrames 截帧时按不同 CSS 层选择了不同中文字形：
+
+- 模板根节点仍是 `<html lang="zh">`，没有明确指定简体中文区域。
+- quote/diary/wanggan 局部层仍把 `STKaiti/KaiTi/Kaiti SC` 或 `Smiley Sans Local/Ma Shan Zheng Local` 放在完整 CJK 字体前面。
+- `cover_gen.py` 封面文字仍优先系统字体，未优先使用项目随包发布的 `SourceHanSansSC-Regular-2.otf`。
+
+本次补充修复：
+
+- `template4.html`、`universal.html`、`template7.html` 根节点统一为 `<html lang="zh-CN">`。
+- 通用 `LOCAL_CJK_FONT_FAMILY` 移除 `Smiley Sans Local`、`Ma Shan Zheng Local`，避免风格字体参与普通中文字幕 fallback。
+- quote 开场标题改为 `var(--cjk-font)` 优先，系统楷体只作最后兜底。
+- `template7` 的网感字幕变量改为 `Source Han Sans SC Local` 优先，风格字体只在明确需要的毛笔/特殊层里保留。
+- `cover_gen.py` 的 `FONT_PATHS`、`QUOTE_FONT_PATHS`、`CLEAN_FONT_PATHS` 均优先项目内 `SourceHanSansSC-Regular-2.otf`。
+
 ## 影响范围
 
 - 影响范围仅限 HyperFrames 网感后处理 composition 字体注入与资产复制。
@@ -62,11 +76,16 @@ OK
 - `video_diary` composition HTML 必须引用 `SourceHanSansSC-Regular-2.otf`。
 - `--cjk-font` 与 `--font` 必须优先使用 `Source Han Sans SC Local`。
 - 继续保留 `Smiley Sans Local`、`Ma Shan Zheng Local` 的字体声明与风格权重。
+- 新增测试覆盖：所有后处理模板必须声明 `<html lang="zh-CN">`；通用 CJK 栈不得再把 `STKaiti/KaiTi/Kaiti SC`、`Smiley Sans Local`、`Ma Shan Zheng Local` 放在 SourceHan 前面；封面生成脚本必须优先项目内 SourceHan 字体。
 
 ## 相关文件
 
 - `hyperframes-postprocess/index.js`
 - `hyperframes-postprocess/assets/fonts/source-han-sans-sc/SourceHanSansSC-Regular-2.otf`
+- `hyperframes-postprocess/templates/template4.html`
+- `hyperframes-postprocess/templates/universal.html`
+- `hyperframes-postprocess/templates/template7.html`
+- `hyperframes-postprocess/scripts/cover_gen.py`
 - `test/test_hyperframes_postprocess.py`
 
 ## 相关记录
