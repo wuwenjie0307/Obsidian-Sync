@@ -106,3 +106,7 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-local-source-han-font-fallback-2026-06-18|h20-hyperframes-local-source-han-font-fallback-2026-06-18]]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-test-merge-template3-sourcehan-2026-06-18|h20-hyperframes-test-merge-template3-sourcehan-2026-06-18]]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-cover-title-frame-source-fix-2026-06-18|h20-hyperframes-cover-title-frame-source-fix-2026-06-18]]
+
+- [[projects/joying-bot-server/changelog/h20-hyperframes-diary-opening-bgm-adapter-fix-2026-06-18|h20-hyperframes-diary-opening-bgm-adapter-fix-2026-06-18]]
+
+- [[projects/joying-bot-server/changelog/h20-hyperframes-science-guide-translation-simplified-fix-2026-06-18|h20-hyperframes-science-guide-translation-simplified-fix-2026-06-18]]
