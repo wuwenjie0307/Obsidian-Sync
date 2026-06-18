@@ -64,3 +64,4 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/docs/h20-hyperframes-test-merge-rules-2026-06-17|h20-hyperframes-test-merge-rules-2026-06-17]]
 
 
+- [[projects/joying-bot-server/docs/h20-hyperframes-template3-quote-migration-2026-06-18|h20-hyperframes-template3-quote-migration-2026-06-18]]
