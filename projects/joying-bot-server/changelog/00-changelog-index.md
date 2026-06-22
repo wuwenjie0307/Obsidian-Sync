@@ -1,4 +1,4 @@
-﻿---
+---
 tags: [index, obsidian-graph]
 ---
 
@@ -110,3 +110,4 @@ tags: [index, obsidian-graph]
 - [[projects/joying-bot-server/changelog/h20-hyperframes-diary-opening-bgm-adapter-fix-2026-06-18|h20-hyperframes-diary-opening-bgm-adapter-fix-2026-06-18]]
 
 - [[projects/joying-bot-server/changelog/h20-hyperframes-science-guide-translation-simplified-fix-2026-06-18|h20-hyperframes-science-guide-translation-simplified-fix-2026-06-18]]
+- [[projects/joying-bot-server/changelog/h20-hyperframes-master-ready-integration-branch-2026-06-22|h20-hyperframes-master-ready-integration-branch-2026-06-22]]
