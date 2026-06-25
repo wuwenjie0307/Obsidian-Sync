@@ -20,6 +20,7 @@ aliases: ["joyingbot-new 更新日志索引"]
 - [[projects/joyingbot-new/changelog/2026-06-10_voxcpm_huggingface_cache_migration|VoxCPM HuggingFace 缓存迁移]]
 - [[projects/joyingbot-new/changelog/2026-06-11_h20_preview_audio_reuse_flat_payload|H20 试听音频复用 flat payload]]
 - [[projects/joyingbot-new/changelog/2026-06-11_voxcpm_long_text_segment_generation|VoxCPM 长文本分段生成]]
+- [[projects/joyingbot-new/changelog/2026-06-22_h20_vibevideo_cover_subtitle_test_restart|H20 网感封面字幕修复合入 test 与重启]]
 
 ## CRM / Prompt / 标签
 

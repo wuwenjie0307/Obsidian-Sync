@@ -15,3 +15,7 @@ aliases: ["joyingbot-new 鍙傝€冩枃妗ｇ储寮?]
 - [[projects/joyingbot-new/docs/2026-06-10_h20_video_tmp_multi_service_sharing|H20 video_tmp 澶氭湇鍔″叡浜疄鏌]
 - [[projects/joyingbot-new/docs/2026-06-11_voxcpm_noise_fix_deploy_runbook|VoxCPM 璇曞惉鍣煶淇閮ㄧ讲 Runbook]]
 
+
+## CRM / 视频素材接口
+
+- [[projects/joyingbot-new/docs/2026-06-23_crm_material_usertask_list_response_fields|CRM 用户任务素材列表返回体字段说明 2026-06-23]]

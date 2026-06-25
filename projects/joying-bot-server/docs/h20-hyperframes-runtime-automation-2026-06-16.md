@@ -10,6 +10,8 @@ aliases: [H20 HyperFrames Runtime 自动化, 网感视频 Node Runtime 部署规
 
 ## 结论
 
+> 2026-06-23 口径修正：测试环境已经可以直接读取 `/data/project/hyperframes-runtime` 共享运行时。`scripts/ensure_hyperframes_runtime.sh` 不再作为每次代码发版后的必跑步骤，只在新机器初始化、共享 runtime 损坏修复、Node/HyperFrames 版本升级时执行。日常发版复用共享 runtime，最多做只读路径/版本检查，渲染前仍由 Python preflight 兜底拦截环境问题。
+
 网感视频 HyperFrames 链路不应依赖每台机器手工安装或手工寻找 `node/npx`。当前项目采用共享 Node runtime + release 内 npm lock 依赖 + 部署脚本校验的方式：
 
 - 共享 runtime 默认目录：`/data/project/hyperframes-runtime`
@@ -305,3 +307,27 @@ Node.js 不应该每台机器手工临时装。当前项目的最优方案是：
 - 每次 release 后必须跑 `scripts/ensure_hyperframes_runtime.sh`。
 - 服务启动前必须确认当前 release 内 `node_modules/.bin/hyperframes` 存在。
 - 缺依赖要让 preflight 明确失败，不要进入半路渲染再猜。
+## 2026-06-23 运维口径修正：日常发版复用共享 runtime
+
+这次以用户确认的 H20 测试服现状为准：测试环境已经能直接读取共享运行时，不需要每次发版都重新执行 runtime 解包或依赖准备。
+
+当前推荐口径：
+
+- 共享运行时由运维统一维护：`/data/project/hyperframes-runtime`。
+- 日常代码 release 复用已准备好的共享 Node 和 HyperFrames deps。
+- `scripts/ensure_hyperframes_runtime.sh` 只用于三类场景：新机器初始化、共享 runtime 损坏修复、Node/HyperFrames 升级。
+- 日常发版前如需确认，只做只读检查，不做安装/解包：
+
+```bash
+test -x /data/project/hyperframes-runtime/current/bin/node
+test -x /data/project/hyperframes-runtime/deps/hyperframes-0.6.42/node_modules/.bin/hyperframes
+/data/project/hyperframes-runtime/current/bin/node -v
+/data/project/hyperframes-runtime/deps/hyperframes-0.6.42/node_modules/.bin/hyperframes --version
+```
+
+- 代码侧 `router/service/video_server2/hyperframes_cli.py` 的 preflight 继续保留，负责在渲染前明确报出 runtime 缺失、版本不对、ffmpeg/libgbm 等环境问题。
+- 本文早期“每次 release 后必须执行 `ensure_hyperframes_runtime.sh`”的表述已废弃；后续给运维的说明应改成“统一准备并维护共享 runtime，代码发版不重复安装”。
+
+## 图谱链接补充
+
+- [[projects/joying-bot-server/changelog/h20-hyperframes-shared-runtime-deps-2026-06-17|h20-hyperframes-shared-runtime-deps-2026-06-17]]
