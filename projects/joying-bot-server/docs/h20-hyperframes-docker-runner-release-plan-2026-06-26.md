@@ -251,3 +251,71 @@ Smoke test 结果：
 - 镜像已经在 H20 测试服构建成功。
 - 不依赖 scheduler，直接跑历史 manifest 已经通过。
 - 下一步可以先把代码上 test，但保持 `HF_RENDER_BACKEND=local`；确认部署无影响后，再设置 Docker backend 环境变量并重启 scheduler 做完整链路验证。
+## 封面接口与 Docker runner 的关系
+
+结论：封面生成接口会复用网感视频封面样式代码，但初期不走 Docker runner。
+
+当前封面接口路径：
+
+```text
+router/service/video_server/First_frame_url.py
+-> create_cover()
+-> resolve_cover_style_for_template()
+-> _compose_hyperframes_cover()
+-> hyperframes-postprocess/scripts/cover_gen.py
+```
+
+也就是说，封面接口在 `cover_style` 为 `wanggan`、`diary`、`quote` 等模板样式时，会直接调用 `hyperframes-postprocess/scripts/cover_gen.py` 生成网感风格封面。
+
+但它不是走 `router/service/video_server2/hyperframes_cli.py::render_hyperframes_video()`，因此不受以下配置影响：
+
+```bash
+HF_RENDER_BACKEND=docker
+HF_DOCKER_IMAGE=h20-hyperframes-renderer:0.6.42-node22.22.2
+HF_MAX_CONCURRENCY=1
+```
+
+本次 Docker runner 只覆盖视频任务里的 HyperFrames 后处理：
+
+```text
+manifest.json -> final.mp4 / cover.png / subtitle_timeline.json / result.json
+```
+
+封面接口仍然在宿主机上直接执行：
+
+```text
+python hyperframes-postprocess/scripts/cover_gen.py ...
+```
+
+## 封面接口并发判断
+
+当前判断：封面接口上线初期不需要像视频渲染一样做 Docker runner，也暂时不需要全局锁。
+
+原因：
+
+- 封面接口主要是抽帧/拿图片 + Pillow 绘制 + 上传。
+- 单次耗时和资源占用明显低于完整 HyperFrames 视频渲染。
+- 不占用 `HF_MAX_CONCURRENCY`，也不会卡住视频渲染 Docker slot。
+- 只要输出路径按 task/user/temp 唯一命名，就不会因为并发写同一个文件而互相覆盖。
+
+需要关注的小风险：
+
+1. CPU 瞬时压力。
+   - 多人同时生成封面时，Pillow 和 rembg 可能短时间吃 CPU。
+   - 尤其有人像抠图的网感封面会比普通文字封面重。
+
+2. 输出路径冲突。
+   - 需要继续保证每次封面生成的输入/输出路径唯一。
+
+后续兜底方案：
+
+- 如果线上观察到封面接口 CPU 飙高、超时或并发失败，优先加轻量信号量，而不是立刻 Docker 化封面接口。
+- 建议环境变量形态：`HF_COVER_MAX_CONCURRENCY=2`。
+- 只有当封面接口也出现明显环境漂移，例如 Pillow/rembg/字体在正式环境不可控，再考虑把 `_compose_hyperframes_cover()` 包成 Docker run。
+
+当前上线决策：
+
+```text
+视频 HyperFrames 渲染：使用 Docker runner + HF_MAX_CONCURRENCY 控制并发。
+封面生成接口：继续走宿主机 cover_gen.py，不接 Docker runner；先观察，必要时再加轻量并发锁。
+```
