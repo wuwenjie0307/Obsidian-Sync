@@ -319,3 +319,116 @@ python hyperframes-postprocess/scripts/cover_gen.py ...
 视频 HyperFrames 渲染：使用 Docker runner + HF_MAX_CONCURRENCY 控制并发。
 封面生成接口：继续走宿主机 cover_gen.py，不接 Docker runner；先观察，必要时再加轻量并发锁。
 ```
+## HyperFrames Docker 并发压测记录（2026-06-27）
+
+本次压测目的：确认 H20 上的 `h20-hyperframes-renderer:0.6.42-node22.22.2` 镜像在 Docker runner 模式下，最多可以同时承载多少个 HyperFrames 后处理任务。
+
+压测对象：
+- H20 host: `hgx19`
+- Docker binary: `/cm/local/apps/docker/current/bin/docker`
+- Docker image: `h20-hyperframes-renderer:0.6.42-node22.22.2`
+- 代码目录：`/data/project/test_ai_botserver.20260627113239`
+- 基准任务：`task_id=1537`，`template_id=video_diary`，约 14 秒视频日记任务
+- 基准 manifest：`/data/project/test_ai_botserver.20260627113239/tmp/h20_hyperframes/1537/manifest.json`
+- 压测方式：复制 1537 的 manifest 到 `/tmp/hf-bench-*`，只改 `task_id`、`job_id`、`output_dir`，每个任务启动一个独立临时容器，渲染完成后容器 `--rm` 自动删除。
+
+注意：这里测的是“同一个镜像同时启动多个独立容器”，不是“一个容器里同时跑多个任务”。当前推荐模型仍然是：一个 HyperFrames 容器只处理一个视频任务；需要并发时启动多个临时容器。
+
+### 压测结果
+
+第一轮：1/2/3 并发，输出目录：`/tmp/hf-bench-1537-20260627123416`
+
+| 并发 | 结果 | 单任务耗时 |
+| --- | --- | --- |
+| 1 | 1 个成功 | 149s |
+| 2 | 2 个成功 | 152s / 156s |
+| 3 | 3 个成功 | 154s / 162s / 165s |
+
+第二轮：4/5 并发，输出目录：`/tmp/hf-bench-1537-plus-20260627125813`
+
+| 并发 | 结果 | 单任务耗时 |
+| --- | --- | --- |
+| 4 | 4 个成功 | 149s / 153s / 161s / 175s |
+| 5 | 5 个成功 | 155s / 156s / 161s / 188s / 194s |
+
+资源观察：
+- H20 是 224 核机器。
+- 3 并发时 load 峰值约 18，内存可用约 1.8T。
+- 4/5 并发时 load 常见在 3-12 之间，内存可用仍约 1.8T。
+- 压测结束后 `docker ps --filter ancestor=h20-hyperframes-renderer:0.6.42-node22.22.2` 无容器残留。
+- 所有压测任务都生成了 `final.mp4` 和 `result.json`，`result.json.success=true`。
+
+### 结论
+
+对于 `task_id=1537` 这种约 14 秒的视频日记任务，H20 上的 HyperFrames Docker runner 至少可以稳定跑到 5 并发，且没有明显资源压力。
+
+这说明 HyperFrames 后处理不应该继续只开 1 个并发，否则前面的模型池即使开多了，最后也会被 HyperFrames 渲染阶段堵住。
+
+### 上线建议
+
+建议顺序：
+1. 先修复 `HYPERFRAMES_RENDER_WAITING` 被外层误判为最终失败的问题。
+2. 测试服切 `HF_RENDER_BACKEND=docker` 后，可以直接验证 `HF_MAX_CONCURRENCY=5`。
+3. 正式服如果要稳妥灰度，建议先 `HF_MAX_CONCURRENCY=3`。
+4. 如果正式环境队列仍明显堆积，再升到 `4` 或 `5`。
+
+保守原因：本次压测只覆盖了一个短视频日记任务。上线前还应额外观察：
+- 科普指南模板。
+- 更长视频。
+- 混剪素材多的任务。
+- 多用户真实提交时的完整链路，包括模型池、上传、回调、CRM 状态同步。
+
+当前测试服状态补充：
+- 1537 成功任务确认走的是 HyperFrames 新流程，但测试服 scheduler 当时没有设置 `HF_RENDER_BACKEND=docker`，所以线上任务仍是 local backend。
+- 这次 1-5 并发压测是手动直接调用 Docker image 验证 runner 能力，不代表 scheduler 已经切到 Docker backend。
+
+## 测试服 Docker backend 实际启用记录（2026-06-27）
+
+这次记录的是 Docker runner 从“镜像已构建/手动压测”进入“测试服 scheduler 实际使用”的状态。
+
+触发背景：
+- `feature/ai_v6.3.3_vibevideo_master_rebuild_clean` 合入 `test` 后，Jenkins 自动部署测试服。
+- 本次 `test` merge commit：`cef524a7 merge feature/ai_v6.3.3_vibevideo_master_rebuild_clean into test`。
+- 部署后检查 H20 live runtime，确认 scheduler 进程已经带上 Docker backend 配置。
+
+H20 runtime 检查结果：
+- H20 host：`hgx19`
+- 新 release 目录：`/data/project/test_ai_botserver.20260627152044`
+- `8017` 进程 cwd：`/data/project/test_ai_botserver.20260627152044`
+- `18017` scheduler 进程 cwd：`/data/project/test_ai_botserver.20260627152044`
+- `8100` 当时仍指向旧 deleted release，但本次 HyperFrames 渲染调度主要看 `18017`。
+
+`18017` scheduler 进程环境变量确认：
+
+```text
+HF_RENDER_BACKEND=docker
+HF_MAX_CONCURRENCY=3
+HF_DOCKER_IMAGE=h20-hyperframes-renderer:0.6.42-node22.22.2
+HF_DOCKER_BINARY=/cm/local/apps/docker/current/bin/docker
+HF_DOCKER_MOUNTS=/data:/data,/tmp:/tmp
+HF_DOCKER_SHM_SIZE=2g
+HF_RENDER_LOCK_TIMEOUT_SECONDS=60
+```
+
+镜像确认：
+
+```text
+h20-hyperframes-renderer:0.6.42-node22.22.2
+```
+
+当前结论：
+- 测试服已经不是只做手动 Docker 压测，`18017` scheduler 已实际切到 `HF_RENDER_BACKEND=docker`。
+- 当前测试服 HyperFrames 并发上限是 `HF_MAX_CONCURRENCY=3`。
+- 发版后配置没有被 Jenkins 覆盖，说明这组环境变量目前已进入测试服进程启动配置或受保护启动环境。
+- 后续每次 test 发版后，建议抽查一次 `18017` 的 `/proc/<pid>/environ`，确认 Docker backend 仍在。
+
+需要特别记住：
+- 这里的并发是“多个临时 Docker 容器并发”，不是“一个容器同时跑多个视频任务”。
+- 一个 HyperFrames 容器仍然只处理一个视频任务；并发由 scheduler 的 `HF_MAX_CONCURRENCY` 控制启动几个临时容器。
+- 封面生成接口仍不走 Docker runner，继续走宿主机 `cover_gen.py`，不占用 `HF_MAX_CONCURRENCY`。
+
+### 相关链接
+
+- [[projects/joying-bot-server/docs/h20-hyperframes-docker-runner-release-plan-2026-06-26|HyperFrames Docker runner 上线方案]]
+- [[projects/joying-bot-server/00-项目概览|joying-bot-server 项目概览]]
+- [[projects/joying-bot-server/docs/00-docs-index|Docs 索引]]
