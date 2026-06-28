@@ -97,5 +97,5 @@ H20 只读检查确认：
 - 新增 `test_generation_recovers_contextual_unselected_materials_for_full_cover`，覆盖 1610 这种 2 个视频选中、1 张图片漏标但文案连续的恢复。
 - 新增 `test_hyperframes_overlay_timings_uses_dense_selected_span_below_eighty_percent`，覆盖整体覆盖率低于 80% 但连续主选区应使用 cue 边界校准的情况。
 - 新增 `test_generation_recovers_mixed_video_photo_contextual_materials`，覆盖多个视频/图片混排、多个图片漏标但文案连续时应恢复。
-- `python -m unittest test.test_video_material_montage_sync`：21 tests OK。
-- HyperFrames/混剪相关子集 149 tests OK。
+- `python -m unittest test.test_video_material_montage_sync`：22 tests OK。
+- HyperFrames/混剪相关子集 150 tests OK。
