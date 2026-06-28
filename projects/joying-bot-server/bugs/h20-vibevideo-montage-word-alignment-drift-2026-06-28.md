@@ -56,3 +56,24 @@ severity: high
 - `python -m unittest test.test_hyperframes_subtitle_translation test.test_hyperframes_upload_callback test.test_montage_material_audio_policy`：14 tests OK。
 - `python -m unittest -v test.test_hyperframes_postprocess`：55 tests OK。
 - `git diff --check`：OK。
+
+## 追加问题：word-level 路径绕过相邻素材 gap repair
+2026-06-28 追加发现：任务 `1624` 中混剪素材 timing 大方向正确，但两段相邻素材之间短暂露出原视频。这个问题不是文本定位错，而是 full-cover/word-alignment 新路径直接写回 ranges，绕过了之前极简链路已有的 `repair_time_gaps_func`，导致相邻文案素材之间的毫秒级 gap 没有被桥接。
+
+根因：
+
+- 旧极简链路在素材文本相邻且 gap 合理时，会通过 `repair_time_gaps_func` 把两个素材时间段桥接成轻微重叠，避免中间露主视频。
+- 新接入的网感 word-level full-cover 路径直接返回 `full_cover_ranges`，没有再走统一 gap repair。
+- 因此修复文案定位偏移后，反而让之前修过的“相邻素材露原视频”保护失效。
+
+修复：
+
+- 新增 `apply_repaired_ranges()`，让 full-cover/word-alignment 得到的 ranges 也统一转换成 segments 后调用 `repair_time_gaps_func`。
+- 如果 gap repair 成功，写回修复后的 `time_range`；如果 repair 没返回对应 payload，则保留原 word-level range。
+
+相关提交：`86cd51a2 fix: bridge vibevideo montage word timing gaps`
+
+验证：
+
+- 新增回归测试：两个素材文案相邻但 word-level 时间有 `0.12s` gap 时，必须调用 gap repair，并桥接成 `0.04s` 重叠。
+- 后续完整回归同上，覆盖混剪同步、HyperFrames analysis/CLI、字幕/上传/音频策略和 postprocess。

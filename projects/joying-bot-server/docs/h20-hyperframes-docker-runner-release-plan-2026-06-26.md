@@ -429,6 +429,61 @@ h20-hyperframes-renderer:0.6.42-node22.22.2
 
 ### 相关链接
 
+## HyperFrames Docker GPU0 7 并发压测记录（2026-06-29）
+
+本次压测目的：在 H20 上用接近 1 分钟的视频任务验证 HyperFrames Docker runner 的 7 并发能力，并尽量把变量控制在单张 GPU 卡上，观察 CPU/GPU 资源占用。
+
+压测对象：
+- H20 host：`hgx19`
+- CPU 核心数：`224`
+- Docker image：`h20-hyperframes-renderer:0.6.42-node22.22.2`
+- 基准任务：`task_id=1601`
+- 基准 manifest：`/data/project/test_ai_botserver.20260628010555/tmp/h20_hyperframes/1601/manifest.json`
+- 基准视频时长：约 `72.58s`
+- 压测目录：`/tmp/hf-bench-1601-7-gpu0-20260629001438`
+- 绑定方式：每个容器使用 `--gpus device=0`，并设置 `NVIDIA_VISIBLE_DEVICES=0`、`CUDA_VISIBLE_DEVICES=0`
+
+单卡确认：
+- 宿主机共有 8 张 NVIDIA H20。
+- 容器探针只看到 `/dev/nvidia0`，`nvidia-smi -L` 只返回 GPU 0。
+- GPU0 上压测期间 `utilization.gpu` 始终为 `0%`。
+- GPU0 已有其它 Python 进程占用约 `30606MiB` 显存；这不是本次 HyperFrames 渲染新增占用。
+
+压测结果：
+
+| 指标 | 结果 |
+| --- | --- |
+| 并发数 | 7 |
+| 成功数 | 7/7 |
+| 总 wall time | `715.3s` |
+| 单任务 render time | `585.9s` - `708.3s` |
+| 平均 RTF | `9.86` |
+| 吞吐 | `0.71` 视频秒 / wall 秒 |
+| 平均 CPU 核数合计 | `8.16` 核 |
+| H20 CPU 占比 | `3.642%` |
+| GPU0 平均利用率 | `0.0%` |
+| GPU0 峰值利用率 | `0.0%` |
+| 容器残留 | 无 |
+
+每路 CPU 观察：
+
+| 路 | 成功 | wall time | render time | 平均 CPU | 峰值 CPU | 折合平均 CPU 核 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 是 | `715.3s` | `633.3s` | `96.1%` | `751.5%` | `0.96` |
+| 2 | 是 | `715.3s` | `635.7s` | `104.5%` | `878.7%` | `1.05` |
+| 3 | 是 | `715.3s` | `635.8s` | `100.4%` | `939.9%` | `1.00` |
+| 4 | 是 | `715.3s` | `708.3s` | `28.3%` | `589.4%` | `0.28` |
+| 5 | 是 | `715.3s` | `633.5s` | `97.2%` | `1085.8%` | `0.97` |
+| 6 | 是 | `715.3s` | `595.1s` | `185.3%` | `1948.0%` | `1.85` |
+| 7 | 是 | `715.3s` | `585.9s` | `204.0%` | `1958.5%` | `2.04` |
+
+结论：
+- H20 单机、单 GPU0 可见条件下，HyperFrames Docker runner 跑 7 并发可以全部成功。
+- 这条 HyperFrames 渲染链路基本不吃 GPU 计算，主要资源压力在 CPU/Chromium/ffmpeg/IO；把它理解成“CPU 型后处理并发”更准确。
+- 从平均 CPU 看，7 并发只消耗约 `8.16` 个 CPU 核，占 H20 `224` 核的 `3.642%`，CPU 余量很大。
+- 但 72 秒视频 7 并发总耗时约 `715s`，平均 RTF 约 `9.86`，说明真正要关注的不只是 CPU 核数，还有 HyperFrames/Chromium/ffmpeg 内部阶段和并行效率。
+- 如果要给测试服 scheduler 提升并发，`HF_MAX_CONCURRENCY=7` 从本次资源角度看可行；正式服仍建议灰度提升，并持续观察失败率、任务耗时、磁盘 IO、回调状态和容器残留。
+
 - [[projects/joying-bot-server/docs/h20-hyperframes-docker-runner-release-plan-2026-06-26|HyperFrames Docker runner 上线方案]]
 - [[projects/joying-bot-server/00-项目概览|joying-bot-server 项目概览]]
 - [[projects/joying-bot-server/docs/00-docs-index|Docs 索引]]
