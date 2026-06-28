@@ -7,6 +7,8 @@ tags: [index, obsidian-graph]
 > 图谱入口：项目概览链接到本页，本页链接到具体 bug 记录。
 ## H20 / 视频链路
 
+- [[projects/joying-bot-server/bugs/h20-vibevideo-montage-full-cover-linear-timing-drift-2026-06-28|h20-vibevideo-montage-full-cover-linear-timing-drift-2026-06-28]]
+
 - [[projects/joying-bot-server/bugs/h20-vibevideo-montage-reference-timing-regression-2026-06-28|h20-vibevideo-montage-reference-timing-regression-2026-06-28]]
 
 - [[projects/joying-bot-server/bugs/prod-montage-empty-material-file-2026-06-23|prod-montage-empty-material-file-2026-06-23]]

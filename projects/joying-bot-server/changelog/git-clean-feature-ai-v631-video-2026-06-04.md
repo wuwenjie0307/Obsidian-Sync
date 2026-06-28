@@ -1,4 +1,4 @@
-﻿---
+---
 date: "2026-06-04"
 tags: [changelog, git, branch, master, test, h20]
 ---
