@@ -77,3 +77,27 @@ severity: high
 
 - 新增回归测试：两个素材文案相邻但 word-level 时间有 `0.12s` gap 时，必须调用 gap repair，并桥接成 `0.04s` 重叠。
 - 后续完整回归同上，覆盖混剪同步、HyperFrames analysis/CLI、字幕/上传/音频策略和 postprocess。
+
+## 2026-06-29 追加复盘：task_id=1633 单素材绕过 word alignment
+
+测试服任务 `task_id=1633` 只有 1 个混剪素材，素材文案就是最终口播文案开头：`敢信吗？这个次新小区交房才不到3年！...目前均价19875元/㎡，`。产品反馈该素材没有从所选第一句文案开始播放。
+
+根因不是多素材排序，也不是图片/视频混排，而是 `_apply_hyperframes_overlay_timings()` 的 `full_cover_time_ranges()` 入口仍保留了 `len(items) < 2` 的限制。只有一个混剪素材时，代码直接绕过 `material_reference_texts + whisper_timeline.words` 的字级定位分支，退回旧 cue 匹配。cue 是字幕断句/ASR 结果，不是用户选中文案的原始锚点；当 cue 漏掉开头或从中间开始时，混剪素材开始时间会偏晚。
+
+修复：去掉“至少 2 个素材”的门槛，只要求存在素材即可进入 reference/word alignment 分支。这样单素材、多素材、稀疏素材都统一走同一套优先级：原文案定位 -> word timing -> cue/linear fallback。
+
+回归测试：新增 `test_hyperframes_overlay_timings_uses_word_alignment_for_single_selected_material`，构造单素材、cue 从 1.2s 才开始但 words 从 0.0s 开始的场景。修复前得到 `(1.2, 6.0)`，修复后得到 `(0.0, 6.0)`。
+
+仍需注意的不可判定场景：
+
+- 如果 `whisper_timeline.words` 缺失或质量很差，且 cue 本身也漏掉选中文案开头，后端没有真实字级时间，只能估算。
+- 如果同一段素材文案在原文案中重复出现，但用户只选了其中某一次且只有一个素材，后端没有前端选区索引或 anchor 时无法知道应匹配第几次。
+- 如果素材文案被前端或接口改写到无法在最终口播文案中定位，只能退回弱匹配。
+
+验证：
+
+- `python -m unittest test.test_video_material_montage_sync.VideoMaterialMontageSyncTest.test_hyperframes_overlay_timings_uses_word_alignment_for_single_selected_material`: OK
+- `python -m unittest test.test_video_material_montage_sync`: 27 tests OK
+- `python -m unittest test.test_montage_material_audio_policy`: 2 tests OK
+- `python -m py_compile scheduler\collect_scheduler.py test\test_video_material_montage_sync.py`: OK
+- `git diff --check -- scheduler\collect_scheduler.py test\test_video_material_montage_sync.py`: OK
