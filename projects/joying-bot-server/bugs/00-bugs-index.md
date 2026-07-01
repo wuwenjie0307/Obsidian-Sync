@@ -85,3 +85,7 @@ tags: [index, obsidian-graph]
 
 
 - [[projects/joying-bot-server/bugs/h20-scheduler-material-usertask-sync-2026-06-24|h20-scheduler-material-usertask-sync-2026-06-24]]
+
+## 生产 / 发版模型池
+- [[projects/joying-bot-server/bugs/prod-release-interrupt-model-container-state-drift-2026-07-01|生产发版中断任务后模型容器状态不同步]]
+
