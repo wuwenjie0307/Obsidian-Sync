@@ -7,6 +7,8 @@ tags: [index, obsidian-graph]
 > 鍥捐氨鍏ュ彛锛氶」鐩瑙堥摼鎺ュ埌鏈〉锛屾湰椤甸摼鎺ュ埌鍏蜂綋鏂囨。銆?
 ## H20 / Docker / 妯″瀷鏈嶅姟
 
+- [[projects/joying-bot-server/docs/h20-video-task-stage-duration-fields-2026-07-01|H20 视频任务阶段耗时字段]]
+
 - [[projects/joying-bot-server/docs/prod-hyperframes-docker-runner-mount-check-2026-06-29|prod-hyperframes-docker-runner-mount-check-2026-06-29]]
 
 - [[projects/joying-bot-server/docs/h20-hyperframes-concurrency-capacity-summary-2026-06-29|h20-hyperframes-concurrency-capacity-summary-2026-06-29]]
@@ -42,6 +44,8 @@ tags: [index, obsidian-graph]
 
 ## Git / 娴佺▼ / 鍗忎綔
 
+- [[projects/joying-bot-server/docs/gitlab-vpn-intranet-connectivity-2026-07-01|GitLab VPN 内网访问差异记录]]
+
 - [[projects/joying-bot-server/docs/h20-master-release-merge-risk-2026-06-22|h20-master-release-merge-risk-2026-06-22]]
 
 - [[projects/joying-bot-server/docs/GitLab鏂版墜GitBash鐗堟湰鎸囧崡|GitLab鏂版墜GitBash鐗堟湰鎸囧崡]]
@@ -74,3 +78,9 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/docs/h20-hyperframes-template3-quote-migration-2026-06-18|h20-hyperframes-template3-quote-migration-2026-06-18]]
 
+
+
+
+## 部署 / 运维 / 环境
+
+- [[projects/joying-bot-server/docs/prod-llm74-llm76-runtime-login-notes-2026-07-01|正式服 LLM74/LLM76 运行与登录记录]]
