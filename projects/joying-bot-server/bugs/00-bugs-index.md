@@ -89,3 +89,6 @@ tags: [index, obsidian-graph]
 ## 生产 / 发版模型池
 - [[projects/joying-bot-server/bugs/prod-release-interrupt-model-container-state-drift-2026-07-01|生产发版中断任务后模型容器状态不同步]]
 
+- [[projects/joying-bot-server/bugs/prod-scheduler-ffmpeg-oom-auto-cleanup-2026-07-02|生产 scheduler OOM 重启触发 auto cleanup 任务失败]]
+
+- [[projects/joying-bot-server/bugs/prod-ffmpeg-reverse-oom-task-backtrace-2026-07-02|生产 ffmpeg reverse OOM 任务反查]]

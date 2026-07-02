@@ -9,6 +9,8 @@ tags: [index, obsidian-graph]
 
 - [[projects/joying-bot-server/docs/h20-video-task-stage-duration-fields-2026-07-01|H20 视频任务阶段耗时字段]]
 
+- [[projects/joying-bot-server/docs/h20-model-timeout-isolation-retry-behavior-2026-07-02|H20 模型超时隔离与重试行为]]
+
 - [[projects/joying-bot-server/docs/prod-hyperframes-docker-runner-mount-check-2026-06-29|prod-hyperframes-docker-runner-mount-check-2026-06-29]]
 
 - [[projects/joying-bot-server/docs/h20-hyperframes-concurrency-capacity-summary-2026-06-29|h20-hyperframes-concurrency-capacity-summary-2026-06-29]]
