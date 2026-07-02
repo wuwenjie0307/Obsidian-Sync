@@ -86,3 +86,7 @@ tags: [index, obsidian-graph]
 ## 部署 / 运维 / 环境
 
 - [[projects/joying-bot-server/docs/prod-llm74-llm76-runtime-login-notes-2026-07-01|正式服 LLM74/LLM76 运行与登录记录]]
+
+## 2026-07-02 新增
+
+- [[projects/joying-bot-server/docs/h20-vibevideo-subtitle-segmentation-switch-2026-07-02|H20 网感字幕分词开关与测试服启用记录]]
